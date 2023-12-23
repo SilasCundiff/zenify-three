@@ -1,0 +1,23 @@
+/* purgecss start ignore */
+@tailwind base;
+@tailwind components;
+/* purgecss end ignore */
+@tailwind utilities;
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsla(0, 00%, 40%, 0.5) hsla(120, 00%, 20%, 0.5);
+}
+
+@layer components {
+  .button {
+    @apply w-6 h-6 cursor-pointer hover:scale-105 transition transform duration-100;
+  }
+}
+
+.canvas {
+  @apply w-full h-full;
+  position: absolute !important;
+  inset: 0;
+  z-index: -1;
+}
