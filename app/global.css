@@ -16,7 +16,7 @@
 }
 
 .canvas {
-  @apply w-full h-full;
+  @apply w-full h-full bg-gradient-to-b from-black to-zinc-900;
   position: absolute !important;
   inset: 0;
   z-index: -1;
