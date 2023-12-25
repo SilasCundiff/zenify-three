@@ -93,6 +93,7 @@ const Player = () => {
             cb(token)
           },
         })
+        console.log(player, 'player')
 
         setPlayer(player)
 
@@ -108,6 +109,7 @@ const Player = () => {
           if (!state) {
             return
           }
+          console.log(state, 'state')
 
           setIsPlaying(state.paused)
           // @ts-ignore

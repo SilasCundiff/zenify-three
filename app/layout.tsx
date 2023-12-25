@@ -26,7 +26,7 @@ export default async function RootLayout({ children }) {
       <head />
       <body>
         <Provider session={session}>
-          <PageWrapper>{children}</PageWrapper>
+          {/* <PageWrapper>{children}</PageWrapper> */}
           <ParticleCanvas />
         </Provider>
       </body>

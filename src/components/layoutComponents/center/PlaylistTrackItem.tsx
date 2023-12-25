@@ -4,7 +4,7 @@ import { convertMsToMinutes } from '@/helpers/time'
 const PlaylistTrackItem = ({ track, order }) => {
   const { id, name, album, artists, duration_ms, explicit, popularity, uri } = track
 
-  console.log('album.images[2].url', album.images[2].url)
+  // console.log('album.images[2].url', album.images[2].url)
 
   return (
     // eslint-disable-next-line tailwindcss/migration-from-tailwind-2

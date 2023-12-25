@@ -17,6 +17,7 @@
     "@types/spotify-web-playback-sdk": "^0.1.19",
     "glsl-random": "^0.0.5",
     "gsap": "^3.12.4",
+    "leva": "^0.9.35",
     "lodash": "^4.17.21",
     "next": "^14.0.4",
     "next-auth": "^4.24.5",
@@ -27,6 +28,7 @@
     "three": "^0.154.0",
     "three-stdlib": "^2.24.2",
     "tunnel-rat": "^0.1.2",
+    "web-audio-beat-detector": "^8.2.1",
     "zustand": "^4.4.7"
   },
   "devDependencies": {

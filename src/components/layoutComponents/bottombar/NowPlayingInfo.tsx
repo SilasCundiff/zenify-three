@@ -2,6 +2,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 import Image from 'next/image'
 
 export default function NowPlayingInfo({ songData }) {
+  // console.log('songData :>> ', songData)
   if (!songData || songData?.id === null) {
     return (
       <div className='flex max-w-[320px] items-center space-x-4 overflow-hidden'>

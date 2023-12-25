@@ -19,6 +19,7 @@ export const useSpotify = () => {
       }
 
       spotifyApi.setAccessToken(session.accessToken)
+      console.log('Spotify access token set.', session.accessToken)
     }
   }, [session])
 
