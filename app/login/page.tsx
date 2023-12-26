@@ -1,12 +1,10 @@
-/* eslint-disable tailwindcss/no-custom-classname */
 import Link from 'next/link'
 import { getServerSession } from 'next-auth'
-import type { AuthOptions } from 'next-auth'
 import { authOptions } from '@/helpers/authOptions'
 import LoginButton from '@/components/common/LoginButton'
 
 async function Login() {
-  const session = await getServerSession<AuthOptions>(authOptions)
+  const session = await getServerSession(authOptions)
 
   return (
     <>

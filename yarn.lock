@@ -1630,7 +1630,7 @@
   resolved "https://registry.npmjs.org/@types/scheduler/-/scheduler-0.16.8.tgz"
   integrity sha512-WZLiwShhwLRmeV6zH+GkbOFT6Z6VklCItrDioxUnv+u4Ll+8vKeFySoFyK/0ctcRpOmwAicELfmys1sDc/Rw+A==
 
-"@types/spotify-web-playback-sdk@^0.1.19":
+"@types/spotify-web-playback-sdk@^0.1.12", "@types/spotify-web-playback-sdk@^0.1.19":
   version "0.1.19"
   resolved "https://registry.npmjs.org/@types/spotify-web-playback-sdk/-/spotify-web-playback-sdk-0.1.19.tgz"
   integrity sha512-Is7x9gMIMoERxE0uvb2SPFQoy5OR7nO1B24CJiaDAUIdq195OLTQedN95XJQtxB2mfm+zi2j3LvEtpPdHKnB3w==
@@ -4895,6 +4895,13 @@ react-reconciler@^0.27.0:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.21.0"
+
+react-spotify-web-playback-sdk@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/react-spotify-web-playback-sdk/-/react-spotify-web-playback-sdk-3.0.2.tgz"
+  integrity sha512-FqCgDEAZkNk6qJ80L38YyxIa0B/SBBaaStvKiYtf5CT+dVCMNEFhDDMUml2JQ7EIiuGraHNaae7Q6ZEmnv9vCA==
+  dependencies:
+    "@types/spotify-web-playback-sdk" "^0.1.12"
 
 react-use-measure@^2.1.1:
   version "2.1.1"

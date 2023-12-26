@@ -8,6 +8,7 @@ import { authOptions } from '@/helpers/authOptions'
 
 import './global.css'
 import Provider from '@/components/context/client-provider'
+import SimplePlayer from '@/components/layoutComponents/bottombar/SimplePlayer'
 
 const natoSansDisplay = Noto_Sans_Display({
   subsets: ['latin-ext'],
@@ -27,7 +28,8 @@ export default async function RootLayout({ children }) {
       <body>
         <Provider session={session}>
           {/* <PageWrapper>{children}</PageWrapper> */}
-          <ParticleCanvas />
+          <SimplePlayer />
+          {/* <ParticleCanvas /> */}
         </Provider>
       </body>
     </html>

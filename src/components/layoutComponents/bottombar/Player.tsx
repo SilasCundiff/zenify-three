@@ -69,6 +69,7 @@ const Player = () => {
     (volume: number) => {
       const debounced = debounce(() => {
         spotifyApi.setVolume(volume).catch((err) => {
+          // TODO: provide error feedback to user
           console.log(err)
         })
       }, 500)
@@ -77,61 +78,60 @@ const Player = () => {
     [spotifyApi],
   )
 
-  const renderPlayer = useCallback(() => {
-    // check to see if the player is already added to the DOM to prevent multiple instances of the player
-    if (token && !window.Spotify) {
-      const script = document.createElement('script')
-      script.src = 'https://sdk.scdn.co/spotify-player.js'
-      script.async = true
+  // const renderPlayer = useCallback(() => {
+  //   // check to see if the player is already added to the DOM to prevent multiple instances of the player
+  //   if (token && !window.Spotify) {
+  //     const script = document.createElement('script')
+  //     script.src = 'https://sdk.scdn.co/spotify-player.js'
+  //     script.async = true
 
-      document.body.appendChild(script)
+  //     document.body.appendChild(script)
 
-      window.onSpotifyWebPlaybackSDKReady = () => {
-        const player = new window.Spotify.Player({
-          name: 'Zenify 2',
-          getOAuthToken: (cb) => {
-            cb(token)
-          },
-        })
-        console.log(player, 'player')
+  //     window.onSpotifyWebPlaybackSDKReady = () => {
+  //       const player = new window.Spotify.Player({
+  //         name: 'Zenify 2',
+  //         getOAuthToken: (cb) => {
+  //           cb(token)
+  //         },
+  //       })
+  //       console.log(player, 'player')
 
-        setPlayer(player)
+  //       setPlayer(player)
 
-        player.addListener('ready', ({ device_id }) => {
-          console.log('Ready with Device ID', device_id)
-        })
+  //       player.addListener('ready', ({ device_id }) => {
+  //         console.log('Ready with Device ID', device_id)
+  //       })
 
-        player.addListener('not_ready', ({ device_id }) => {
-          console.log('Device ID has gone offline', device_id)
-        })
+  //       player.addListener('not_ready', ({ device_id }) => {
+  //         console.log('Device ID has gone offline', device_id)
+  //       })
 
-        player.addListener('player_state_changed', (state) => {
-          if (!state) {
-            return
-          }
-          console.log(state, 'state')
+  //       player.addListener('player_state_changed', (state) => {
+  //         if (!state) {
+  //           return
+  //         }
 
-          setIsPlaying(state.paused)
-          // @ts-ignore
-          setNowPlaying(state.track_window.current_track)
+  //         setIsPlaying(state.paused)
+  //         // @ts-ignore
+  //         setNowPlaying(state.track_window.current_track)
 
-          player.getCurrentState().then((state) => {
-            if (!state) {
-              setIsActive(false)
-            } else {
-              setIsActive(true)
-            }
-          })
-        })
+  //         player.getCurrentState().then((state) => {
+  //           if (!state) {
+  //             setIsActive(false)
+  //           } else {
+  //             setIsActive(true)
+  //           }
+  //         })
+  //       })
 
-        player.connect()
+  //       player.connect()
 
-        return () => {
-          player.disconnect()
-        }
-      }
-    }
-  }, [token, setIsPlaying, setNowPlaying, setIsActive])
+  //       return () => {
+  //         player.disconnect()
+  //       }
+  //     }
+  //   }
+  // }, [token, setIsPlaying, setNowPlaying, setIsActive])
 
   useEffect(() => {
     if (selectedSong?.id) {
@@ -139,9 +139,9 @@ const Player = () => {
     }
   }, [selectedSong, playTrack])
 
-  useEffect(() => {
-    renderPlayer()
-  }, [token, renderPlayer])
+  // useEffect(() => {
+  //   renderPlayer()
+  // }, [token, renderPlayer])
 
   useEffect(() => {
     if (volume > 0 && volume < 100) {
@@ -150,24 +150,29 @@ const Player = () => {
   }, [volume, debouncedVolumeChange])
 
   useEffect(() => {
-    if (!player) {
-      return
-    }
+    // if (!player) {
+    //   return
+    // }
 
-    player.getCurrentState().then((state) => {
-      if (!state) {
-        setIsActive(false)
-      } else {
-        setIsActive(true)
-      }
-    })
+    // player.getCurrentState().then((state) => {
+    //   if (!state) {
+    //     setIsActive(false)
+    //   } else {
+    //     setIsActive(true)
+    //   }
+    // })
+    ;(async () => {
+      spotifyApi.getMyCurrentPlaybackState().then((res) => {
+        console.log('res', res)
+      })
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  if (!player) {
-    console.log(player, 'player')
-    return <>no player</>
-  }
+  // if (!player) {
+  //   console.log(player, 'player')
+  //   return <>no player</>
+  // }
 
   if (!isActive) {
     return (
@@ -179,6 +184,9 @@ const Player = () => {
       </div>
     )
   }
+
+  // console.log('nowPlaying', nowPlaying)
+  // console.log('selectedSong', selectedSong)
 
   return (
     <div>

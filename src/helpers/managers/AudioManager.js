@@ -26,6 +26,12 @@ export default class AudioManager {
       const audioListener = new THREE.AudioListener()
       this.audio = new THREE.Audio(audioListener)
       const audioLoader = new THREE.AudioLoader()
+      //   audioLoader.withCredentials = true
+      //   audioLoader.requestHeader = {
+      //     'Access-Control-Allow-Origin': '*',
+      //     Authorization:
+      //       'Bearer BQB2OurH4kYR5gv_bGsgo5f9Xmxf4NlU5V4psDzPRilY98uTI1HztZiUDLQR9C2PQR0TttrkNuveNhIhrta73WBHhRV8MUX1sHbnRV5XciZmtMYbiivTIHe3TZwUvWOnbkQXKMyVUHih9psImfff21b6zPkDUMyoRzobhZY7wMAPkDTyzne4Mlylgr0c85I0yfcZHDc92R6nO6FRttYi5R5D6Krzabyw3jlIW7Tpgzo',
+      //   }
 
       audioLoader.load(this.song.url, (buffer) => {
         console.log('Audio loaded', buffer)
