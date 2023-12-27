@@ -29,7 +29,7 @@ export default async function RootLayout({ children }) {
         <Provider session={session}>
           {/* <PageWrapper>{children}</PageWrapper> */}
           <SimplePlayer />
-          {/* <ParticleCanvas /> */}
+          <ParticleCanvas />
         </Provider>
       </body>
     </html>

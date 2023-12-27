@@ -1,5 +1,6 @@
 'use client'
 import { useSpotifyApi, useSpotifySongAnalysis, useSpotifyWebSDK } from '@/helpers/hooks'
+import { useFrame } from '@react-three/fiber'
 import { use, useEffect, useRef, useState } from 'react'
 
 export default function SimplePlayer() {
@@ -7,9 +8,6 @@ export default function SimplePlayer() {
   const prevTrackNameRef = useRef()
   const spotifyApi = useSpotifyApi()
   const [nowPlaying, setNowPlaying] = useState(null)
-  const { analysis, features } = useSpotifySongAnalysis()
-
-  console.dir({ analysis, features }, { depth: null, colors: true })
 
   const playSpecificSongForTesting = async () => {
     const token = await spotifyApi.getAccessToken()
@@ -37,13 +35,27 @@ export default function SimplePlayer() {
     prevTrackNameRef.current = currentTrackName
   }, [playerState])
 
+  useEffect(() => {
+    const audioCtx = new AudioContext()
+    const oscillatorNode = audioCtx.createOscillator()
+    const gainNode = audioCtx.createGain()
+    const finish = audioCtx.destination
+
+    oscillatorNode.connect(gainNode)
+    gainNode.connect(finish)
+  }, [nowPlaying])
+
   return (
     <div>
-      <div className='flex h-screen w-full flex-col items-center justify-center bg-black text-white'>
-        <button onClick={() => player.togglePlay()}>{playerState?.paused ? 'Play' : 'Pause'}</button>
-        <button className='text-white' onClick={() => handleClick()}>
-          Void Surfacing
-        </button>
+      <div className='flex h-screen w-full flex-col items-center justify-center bg-transparent  text-white'>
+        <div>
+          <button className='m-2 rounded-lg bg-green-300 px-4 py-2 text-black' onClick={() => player.togglePlay()}>
+            {playerState?.paused ? 'Play' : 'Pause'}
+          </button>
+          <button className='m-2 rounded-lg bg-green-300 px-4 py-2 text-black' onClick={() => handleClick()}>
+            Void Surfacing
+          </button>
+        </div>
         <p>Now Playing: {nowPlaying}</p>
       </div>
     </div>

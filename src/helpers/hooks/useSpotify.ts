@@ -47,11 +47,12 @@ export const useSpotifyWebSDK = () => {
 
   useEffect(() => {
     // prevent duplicate script injection
-    if (window.Spotify) return
+    if (window.Spotify || document.querySelector('.spotify-player')) return
 
     const script = document.createElement('script')
     script.src = 'https://sdk.scdn.co/spotify-player.js'
     script.async = true
+    script.className = 'spotify-player'
 
     document.body.appendChild(script)
 

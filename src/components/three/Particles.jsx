@@ -1,15 +1,16 @@
 'use client'
 import * as THREE from 'three'
-import gsap from 'gsap'
+import { interpolateRgb, interpolateBasis } from 'd3-interpolate'
 import vertex from '@/helpers/three/shaders/vertex.glsl'
 import fragment from '@/helpers/three/shaders/fragment.glsl'
 import { Center, OrbitControls, shaderMaterial } from '@react-three/drei'
 import { extend, useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { useControls } from 'leva'
-import AudioManager from '@/helpers/managers/AudioManager'
-import BPMManager from '@/helpers/managers/BPMManager'
-import { debounce } from 'lodash'
+
+import { useSpotifySongAnalysis } from '@/helpers/hooks'
+import spotifyApi from '@/helpers/spotify'
+import SpotifySync from '@/helpers/managers/SpotifySync'
 
 const ParticleMaterial = shaderMaterial(
   {
@@ -29,26 +30,32 @@ const ParticleMaterial = shaderMaterial(
 
 extend({ ParticleMaterial })
 
-let audioManager
-let bpmManager
-
 export default function Particles() {
+  // const { analysis, features } = useSpotifySongAnalysis()
+  // const accessToken = spotifyApi.getAccessToken()
+
+  // console.dir({ analysis, features }, { depth: null, colors: true })
+
   const particleRef = useRef()
-  const meshRef = useRef()
   const pointsRef = useRef()
+  const spotifySync = useRef()
   useFrame(({ clock }) => {
-    // console.log('audio manager playing in clock?', audioManager?.frequencyData)
+    const time = clock.getElapsedTime()
     if (particleRef.current) {
-      // console.log('audioManager', audioManager.frequencyData)
-      particleRef.current.uniforms.amplitude.value =
-        0.8 + THREE.MathUtils.mapLinear(audioManager.frequencyData.high, 0, 0.6, -0.1, 0.2)
-      particleRef.current.uniforms.offsetSize.value = audioManager.frequencyData.mid * 0.6
-      const t = THREE.MathUtils.mapLinear(audioManager.frequencyData.low, 0.6, 1, 0.2, 0.5)
-      particleRef.current.uniforms.time.value += THREE.MathUtils.clamp(t, 0.2, 0.5)
-    } else {
-      console.log('no particleRef')
+      particleRef.current.uniforms.time.value = clock.getElapsedTime()
+
+      if (spotifySync.current) {
+        spotifySync.current.on('beat', (beat) => {
+          // console.log('beat', spotifySync.current.active)
+          if (spotifySync.current.isActive) {
+            console.log('beat', beat, spotifySync.current.volume)
+            particleRef.current.uniforms.amplitude.value = spotifySync.current.volume * time
+          } else {
+            particleRef.current.uniforms.amplitude.value = 1
+          }
+        })
+      }
     }
-    audioManager.update()
   })
   const particleControls = useControls(
     'Particles',
@@ -66,40 +73,6 @@ export default function Particles() {
   )
 
   useEffect(() => {
-    ;(async () => {
-      audioManager = new AudioManager()
-      await audioManager.loadAudioBuffer()
-
-      bpmManager = new BPMManager()
-      bpmManager.addEventListener('beat', (e) => {
-        if (!audioManager?.isPlaying || !bpmManager) return
-        console.log('beat', audioManager?.frequencyData)
-        const duration = bpmManager?.getBPMDuration() / 1000
-        if (audioManager?.isPlaying) {
-          if (Math.random() < 0.5) {
-            gsap.to(pointsRef.current.rotation, {
-              duration: Math.random() < 0.8 ? 15 : duration, // Either a longer or BPM-synced duration
-              // y: Math.random() * Math.PI * 2,
-              z: Math.random() * Math.PI,
-              ease: 'elastic.out(0.2)',
-            })
-          }
-        }
-      })
-      await bpmManager.detectBPM(audioManager.audio.buffer)
-
-      audioManager.update()
-    })()
-
-    // TODO clean up event listeners
-    return () => {
-      audioManager.pause()
-      audioManager = null
-      bpmManager = null
-    }
-  }, [])
-
-  useEffect(() => {
     if (pointsRef.current.material) {
       pointsRef.current.material.uniforms.startColor.value = new THREE.Color(particleControls.startColor)
       pointsRef.current.material.uniforms.endColor.value = new THREE.Color(particleControls.endColor)
@@ -113,20 +86,18 @@ export default function Particles() {
     // console.log('particleControls', meshRef.current.material.uniforms)
   }, [particleControls])
 
-  const handlePausePlay = debounce((e) => {
-    e.stopPropagation()
-    if (audioManager.isPlaying) {
-      audioManager.pause()
-    } else {
-      audioManager.play()
+  useEffect(() => {
+    spotifySync.current = new SpotifySync({ spotifyApi })
+    return () => {
+      spotifySync.current = null
     }
-  }, 50)
+  }, [])
 
   return (
     <>
       <Center>
         <OrbitControls makeDefault />
-        <points ref={pointsRef} onClick={handlePausePlay}>
+        <points ref={pointsRef}>
           <boxGeometry args={[1, 1, 1, 10, 10, 10]} />
           <particleMaterial ref={particleRef} side={THREE.DoubleSide} transparent />
         </points>
