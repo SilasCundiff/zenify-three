@@ -44,6 +44,23 @@ export const useSpotifyWebSDK = () => {
   const [player, setPlayer] = useState(null)
   // the player state, has properties like playerState.track_window.current_track.name, playerState.paused, etc.
   const [playerState, setPlayerState] = useState(null)
+  const [playbackData, setPlaybackData] = useState(null)
+  const [analysis, setAnalysis] = useState(null)
+  const [features, setFeatures] = useState(null)
+  const currentSongRef = useRef(null)
+
+  const getAnalysis = useCallback(
+    async (songId) => {
+      const analysis = await spotifyApi.getAudioAnalysisForTrack(songId)
+      const features = await spotifyApi.getAudioFeaturesForTrack(songId)
+      const playbackData = await spotifyApi.getMyCurrentPlaybackState()
+
+      setAnalysis(analysis.body)
+      setFeatures(features.body)
+      setPlaybackData(playbackData.body)
+    },
+    [spotifyApi],
+  )
 
   useEffect(() => {
     // prevent duplicate script injection
@@ -84,9 +101,9 @@ export const useSpotifyWebSDK = () => {
     })
 
     // TODO: possibly use this to update UI
-    // player.addListener('not_ready', ({ device_id }) => {
-    //   console.log('Device ID has gone offline')
-    // })
+    player.addListener('not_ready', ({ device_id }) => {
+      console.log('Device ID has gone offline')
+    })
 
     player.addListener('player_state_changed', (state) => {
       if (!state) {
@@ -106,39 +123,59 @@ export const useSpotifyWebSDK = () => {
     }
   }, [token, isReady, spotifyApi])
 
-  return { player, playerState }
-}
-
-export const useSpotifySongAnalysis = () => {
-  const spotifyApi = useSpotifyApi()
-  const { playerState } = useSpotifyWebSDK()
-  const [analysis, setAnalysis] = useState(null)
-  const [features, setFeatures] = useState(null)
-  const currentSongRef = useRef(null)
-
-  const getAnalysis = useCallback(
-    async (songId) => {
-      const analysis = await spotifyApi.getAudioAnalysisForTrack(songId)
-      const features = await spotifyApi.getAudioFeaturesForTrack(songId)
-
-      setAnalysis(analysis)
-      setFeatures(features)
-    },
-    [spotifyApi],
-  )
-
   useEffect(() => {
+    // if the player is paused, don't make the request
     if (!playerState) return
 
     const songId = playerState?.track_window?.current_track?.id
 
     if (!songId) return
+    if (!playerState?.paused) return
 
-    if (songId !== currentSongRef.current) {
+    if (songId !== currentSongRef.current || !playerState?.paused || !spotifyApi) {
       currentSongRef.current = songId
       getAnalysis(songId)
     }
-  }, [playerState, getAnalysis])
+  }, [playerState, getAnalysis, spotifyApi])
 
-  return { analysis, features }
+  return { player, playerState, analysis, features, playbackData }
 }
+
+// export const useSpotifySongAnalysis = (playerState) => {
+//   const spotifyApi = useSpotifyApi()
+//   const [analysis, setAnalysis] = useState(null)
+//   const [features, setFeatures] = useState(null)
+//   const currentSongRef = useRef(null)
+
+//   const getAnalysis = useCallback(
+//     async (songId) => {
+//       const analysis = await spotifyApi.getAudioAnalysisForTrack(songId)
+//       const features = await spotifyApi.getAudioFeaturesForTrack(songId)
+//       // const playbackData = await spotifyApi.getMyCurrentPlaybackData()
+
+//       setAnalysis(analysis.body)
+//       setFeatures(features.body)
+//     },
+//     [spotifyApi],
+//   )
+
+//   useEffect(() => {
+//     // if the player is paused, don't make the request
+//     if (!playerState) return
+//     console.log('playerState update in use song analysis', playerState)
+
+//     const songId = playerState?.track_window?.current_track?.id
+
+//     // setPaused(playerState?.paused)
+
+//     if (!songId) return
+//     if (!playerState?.paused) return
+
+//     if (songId !== currentSongRef.current || !playerState?.paused) {
+//       currentSongRef.current = songId
+//       getAnalysis(songId)
+//     }
+//   }, [playerState, getAnalysis])
+
+//   return { analysis, features }
+// }

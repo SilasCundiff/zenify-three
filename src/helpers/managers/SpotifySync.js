@@ -1,6 +1,9 @@
 import { scaleLog } from 'd3-scale'
 import { min } from 'd3-array'
 
+// Code courtesy of https://github.com/zachwinter/spotify-viz/tree/master
+// Modified to work with Zenify
+
 /**
  * Common easing functions.
  * https://gist.github.com/gre/1650294
@@ -130,9 +133,22 @@ function Observe(target) {
 }
 
 export default class SpotifySync {
-  constructor({ spotifyApi, volumeSmoothing = 100, pingDelay = 2500 } = {}) {
+  constructor({
+    spotifyApi,
+    analysis,
+    playerState,
+    playbackData,
+    features,
+    volumeSmoothing = 100,
+    pingDelay = 50,
+  } = {}) {
     const accessToken = spotifyApi.getAccessToken()
     const refreshToken = spotifyApi.getRefreshToken()
+
+    this.analysis = analysis
+    this.features = features
+    this.playerState = playerState
+    this.playbackData = playbackData
 
     this.state = Observe({
       spotifyApi,
@@ -159,8 +175,8 @@ export default class SpotifySync {
         sections: {},
       }),
       currentlyPlaying: {},
-      trackAnalysis: {},
-      trackFeatures: {},
+      trackAnalysis: { ...analysis },
+      trackFeatures: { ...features },
       initialTrackProgress: 0,
       initialStart: 0,
       trackProgress: 0,
@@ -201,19 +217,36 @@ export default class SpotifySync {
     }, this.state.apiConstants.pingDelay)
   }
 
-  async getCurrentlyPlaying() {
-    const { spotifyApi } = this.state
-    const data = await spotifyApi.getMyCurrentPlaybackState()
-    console.log(data?.body)
+  // currently unused
+  updateTrackInfo({ analysis, features, playbackData, playerState }) {
+    // console.log('in update track info', { analysis, features, playbackData, playerState })
+    this.analysis = analysis
+    this.features = features
+    this.currentTrack = playbackData
+    this.player = playerState
+  }
 
-    if (!data || !data?.body?.is_playing) {
-      if (this.state.active) {
-        this.state.active = false
-      }
+  getCurrentlyPlaying() {
+    if (this.playerState?.paused || !this.playbackData?.item) {
+      this.state.active = false
       return this.ping()
     }
-    this.processResponse(data.body)
+
+    this.processResponse(this.playbackData)
   }
+
+  //   async getCurrentlyPlaying() {
+  //     const { spotifyApi } = this.state
+  //     const data = await spotifyApi.getMyCurrentPlaybackState()
+
+  //     if (!data || !data?.body?.is_playing) {
+  //       if (this.state.active) {
+  //         this.state.active = false
+  //       }
+  //       return this.ping()
+  //     }
+  //     this.processResponse(data.body)
+  //   }
 
   processResponse(data) {
     const songsInSync = JSON.stringify(data.item) === JSON.stringify(this.state.currentlyPlaying)
@@ -225,14 +258,20 @@ export default class SpotifySync {
     this.ping()
   }
 
-  async getTrackInfo({ item, progress_ms }) {
+  getTrackInfo({ item, progress_ms }) {
     const tick = window.performance.now()
-    const analysisData = await this.state.spotifyApi.getAudioAnalysisForTrack(item.id)
-    const featuresData = await this.state.spotifyApi.getAudioFeaturesForTrack(item.id)
-    const analysis = analysisData.body
-    const features = featuresData.body
+    // const analysisData = await this.state.spotifyApi.getAudioAnalysisForTrack(item.id)
+    // console.log('data',analysisData)
+    // const featuresData = await this.state.spotifyApi.getAudioFeaturesForTrack(item.id)
+    // const analysis = analysisData.body
+    // const features = featuresData.body
+    const analysis = this.analysis
+    const features = this.state.trackFeatures
+    if (!analysis || !features) {
+      return this.ping()
+    }
 
-    console.log(analysis, features)
+    // console.log('in get track info', analysis)
 
     this.state.intervalTypes.forEach((t) => {
       const type = analysis[t]

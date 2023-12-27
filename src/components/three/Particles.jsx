@@ -8,7 +8,7 @@ import { extend, useFrame } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { useControls } from 'leva'
 
-import { useSpotifySongAnalysis } from '@/helpers/hooks'
+import { useSpotifySongAnalysis, useSpotifyWebSDK } from '@/helpers/hooks'
 import spotifyApi from '@/helpers/spotify'
 import SpotifySync from '@/helpers/managers/SpotifySync'
 
@@ -31,7 +31,11 @@ const ParticleMaterial = shaderMaterial(
 extend({ ParticleMaterial })
 
 export default function Particles() {
+  const { playerState, analysis, features, playbackData } = useSpotifyWebSDK()
   // const { analysis, features } = useSpotifySongAnalysis()
+  // console.log('playbackState', playerState, playbackData, analysis, features)
+
+  // console.log('analysis', analysis)
   // const accessToken = spotifyApi.getAccessToken()
 
   // console.dir({ analysis, features }, { depth: null, colors: true })
@@ -39,24 +43,36 @@ export default function Particles() {
   const particleRef = useRef()
   const pointsRef = useRef()
   const spotifySync = useRef()
-  useFrame(({ clock }) => {
-    const time = clock.getElapsedTime()
-    if (particleRef.current) {
-      particleRef.current.uniforms.time.value = clock.getElapsedTime()
+  const currentAmplitude = useRef(1)
+  const targetAmplitude = useRef(1)
+  const currentFrequency = useRef(1)
+  const targetFrequency = useRef(1)
 
-      if (spotifySync.current) {
-        spotifySync.current.on('beat', (beat) => {
-          // console.log('beat', spotifySync.current.active)
-          if (spotifySync.current.isActive) {
-            console.log('beat', beat, spotifySync.current.volume)
-            particleRef.current.uniforms.amplitude.value = spotifySync.current.volume * time
-          } else {
-            particleRef.current.uniforms.amplitude.value = 1
+  useFrame(({ clock }) => {
+    currentFrequency.current += (targetFrequency.current - currentFrequency.current) * 0.2
+    particleRef.current.uniforms.amplitude.value = currentFrequency.current
+    const time = clock.getElapsedTime()
+    particleRef.current.uniforms.time.value = time
+
+    if (!spotifySync.current?.isActive) {
+      currentFrequency.current = 1
+      particleRef.current.uniforms.amplitude.value = currentFrequency.current
+    }
+
+    if (spotifySync.current) {
+      spotifySync.current.on('tatum', (tatum) => {
+        if (spotifySync.current?.isActive) {
+          if (spotifySync.current.volume) {
+            targetFrequency.current = (spotifySync.current.volume * time) / 10
           }
-        })
-      }
+        } else {
+          // reset amplitude if not active
+          targetFrequency.current = 1
+        }
+      })
     }
   })
+
   const particleControls = useControls(
     'Particles',
     {
@@ -87,18 +103,20 @@ export default function Particles() {
   }, [particleControls])
 
   useEffect(() => {
-    spotifySync.current = new SpotifySync({ spotifyApi })
+    // console.log('anything updated', spotifyApi, analysis, features, playerState, playbackData)
+    spotifySync.current = new SpotifySync({ spotifyApi, analysis, features, playerState, playbackData })
+    // spotifySync.current.updateTrackInfo({ analysis, features, playerState, playbackData })
     return () => {
       spotifySync.current = null
     }
-  }, [])
+  }, [analysis, features, playerState, playbackData])
 
   return (
     <>
       <Center>
         <OrbitControls makeDefault />
         <points ref={pointsRef}>
-          <boxGeometry args={[1, 1, 1, 10, 10, 10]} />
+          <boxGeometry args={[2, 2, 2, 10, 10, 10]} />
           <particleMaterial ref={particleRef} side={THREE.DoubleSide} transparent />
         </points>
       </Center>

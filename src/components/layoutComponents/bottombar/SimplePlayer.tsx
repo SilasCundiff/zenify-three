@@ -8,6 +8,7 @@ export default function SimplePlayer() {
   const prevTrackNameRef = useRef()
   const spotifyApi = useSpotifyApi()
   const [nowPlaying, setNowPlaying] = useState(null)
+  const [isActive, setIsActive] = useState(false)
 
   const playSpecificSongForTesting = async () => {
     const token = await spotifyApi.getAccessToken()
@@ -29,21 +30,21 @@ export default function SimplePlayer() {
 
   useEffect(() => {
     const currentTrackName = playerState?.track_window.current_track.name
+
+    // update the isActive state
+    if (playerState) {
+      if (playerState.paused) {
+        setIsActive(false)
+      } else {
+        setIsActive(true)
+      }
+    }
+
     if (playerState && prevTrackNameRef.current !== currentTrackName) {
       setNowPlaying(currentTrackName)
     }
     prevTrackNameRef.current = currentTrackName
   }, [playerState])
-
-  useEffect(() => {
-    const audioCtx = new AudioContext()
-    const oscillatorNode = audioCtx.createOscillator()
-    const gainNode = audioCtx.createGain()
-    const finish = audioCtx.destination
-
-    oscillatorNode.connect(gainNode)
-    gainNode.connect(finish)
-  }, [nowPlaying])
 
   return (
     <div>
