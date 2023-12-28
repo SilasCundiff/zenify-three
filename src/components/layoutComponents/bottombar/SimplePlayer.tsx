@@ -1,5 +1,5 @@
 'use client'
-import { useSpotifyApi, useSpotifySongAnalysis, useSpotifyWebSDK } from '@/helpers/hooks'
+import { useSpotifyApi, useSpotifyWebSDK } from '@/helpers/hooks'
 import { useFrame } from '@react-three/fiber'
 import { use, useEffect, useRef, useState } from 'react'
 

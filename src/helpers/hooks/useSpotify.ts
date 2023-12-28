@@ -1,5 +1,5 @@
 import { useSession, signIn } from 'next-auth/react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useRef, useState } from 'react'
 import spotifyApi from '@/helpers/spotify'
 
 /**A
@@ -44,23 +44,24 @@ export const useSpotifyWebSDK = () => {
   const [player, setPlayer] = useState(null)
   // the player state, has properties like playerState.track_window.current_track.name, playerState.paused, etc.
   const [playerState, setPlayerState] = useState(null)
-  const [playbackData, setPlaybackData] = useState(null)
-  const [analysis, setAnalysis] = useState(null)
-  const [features, setFeatures] = useState(null)
-  const currentSongRef = useRef(null)
+  const deviceId = useRef(null)
+  // const [playbackData, setPlaybackData] = useState(null)
+  // const [analysis, setAnalysis] = useState(null)
+  // const [features, setFeatures] = useState(null)
+  // const currentSongRef = useRef(null)
 
-  const getAnalysis = useCallback(
-    async (songId) => {
-      const analysis = await spotifyApi.getAudioAnalysisForTrack(songId)
-      const features = await spotifyApi.getAudioFeaturesForTrack(songId)
-      const playbackData = await spotifyApi.getMyCurrentPlaybackState()
+  // const getAnalysis = useCallback(
+  //   async (songId) => {
+  //     const analysis = await spotifyApi.getAudioAnalysisForTrack(songId)
+  //     const features = await spotifyApi.getAudioFeaturesForTrack(songId)
+  //     const playbackData = await spotifyApi.getMyCurrentPlaybackState()
 
-      setAnalysis(analysis.body)
-      setFeatures(features.body)
-      setPlaybackData(playbackData.body)
-    },
-    [spotifyApi],
-  )
+  //     setAnalysis(analysis.body)
+  //     setFeatures(features.body)
+  //     setPlaybackData(playbackData.body)
+  //   },
+  //   [spotifyApi],
+  // )
 
   useEffect(() => {
     // prevent duplicate script injection
@@ -93,11 +94,26 @@ export const useSpotifyWebSDK = () => {
       volume: 0.01,
     })
 
+    const setActiveDevice = async () => {
+      console.log('setting active device')
+      if (deviceId.current !== null) {
+        const device_id = deviceId.current
+        await spotifyApi.transferMyPlayback([device_id])
+        await spotifyApi.setVolume(1, { device_id })
+        console.log('active device set')
+      }
+      // if the device id is not set, call this function again after a timeout
+      else {
+        setTimeout(() => {
+          setActiveDevice()
+        }, 500)
+      }
+    }
+
     player.setVolume(0.01)
     player.addListener('ready', ({ device_id }) => {
-      spotifyApi.transferMyPlayback([device_id])
-
-      spotifyApi.setVolume(1, { device_id })
+      deviceId.current = device_id
+      setActiveDevice()
     })
 
     // TODO: possibly use this to update UI
@@ -123,59 +139,128 @@ export const useSpotifyWebSDK = () => {
     }
   }, [token, isReady, spotifyApi])
 
+  // useEffect(() => {
+  //   // if the player is paused, don't make the request
+  //   if (!playerState) return
+
+  //   const songId = playerState?.track_window?.current_track?.id
+
+  //   if (!songId) return
+  //   if (!playerState?.paused) return
+  //   console.log('spotifyAPI quick reference', spotifyApi)
+
+  //   if (songId !== currentSongRef.current || !playerState?.paused || spotifyApi !== null) {
+  //     currentSongRef.current = songId
+  //     getAnalysis(songId)
+  //   }
+  // }, [playerState, getAnalysis, spotifyApi])
+
+  // return { player, playerState, analysis, features, playbackData }
+  return { player, playerState }
+}
+
+export const useSpotifySongAnalysis = () => {
+  const { playerState } = useSpotifyWebSDK()
+  const spotifyApi = useSpotifyApi()
+  console.log('playerState in use song analysis', playerState)
+  console.log('spotifyApi in use song analysis', spotifyApi)
+  const [initialized, setInitialized] = useState(false)
+  const [trackAnalysis, setTrackAnalysis] = useState(null)
+  const [trackFeatures, setTrackFeatures] = useState(null)
+  const [active, setActive] = useState(false)
+  const [initialTrackProgress, setInitialTrackProgress] = useState(0)
+  const [initialStart, setInitialStart] = useState(0)
+  const [trackProgress, setTrackProgress] = useState(0)
+
+  const [activeIntervals, setActiveIntervals] = useState({
+    tatums: {},
+    segments: {},
+    beats: {},
+    bars: {},
+    sections: {},
+  })
+  // this may be redundant.
+  const [currentPlayback, setCurrentPlayback] = useState(null)
+  const currentSongRef = useRef(null)
+
+  // get the current playback state
+  const getPlayback = useCallback(async () => {
+    const playbackData = await spotifyApi.getMyCurrentPlaybackState()
+    setInitialized(true)
+
+    // get if the players song and the current playback song are the same
+    const songId = playerState?.track_window?.current_track?.id
+    const currentPlaybackSongId = playbackData?.body?.item?.id
+    const isSameSong = songId === currentPlaybackSongId
+
+    // only set the playback data if the songs are different to prevent excessive analysis requests, or if the playback data is null
+    if (!isSameSong || !currentPlayback) {
+      setCurrentPlayback(playbackData.body)
+    }
+  }, [playerState, spotifyApi, currentPlayback])
+
+  const getAnalysis = useCallback(
+    async (songId) => {
+      console.log('getting analysis', songId)
+      const tick = window.performance.now()
+
+      const analysis = await spotifyApi.getAudioAnalysisForTrack(songId)
+      const features = await spotifyApi.getAudioFeaturesForTrack(songId)
+      const intervalTypes = ['tatums', 'segments', 'beats', 'bars', 'sections']
+
+      intervalTypes.forEach((intervalType) => {
+        const type = analysis.body[intervalType]
+        type[0].duration = type[0].start + type[0].duration
+        type[0].start = 0
+        type[type.length - 1].duration = currentPlayback.item.duration_ms / 1000 - type[type.length - 1].start
+        type.forEach((interval) => {
+          if (interval.loudness_max_time) {
+            interval.loudness_max_time = interval.loudness_max_time * 1000
+          }
+          interval.start = interval.start * 1000
+          interval.duration = interval.duration * 1000
+        })
+      })
+
+      const tock = window.performance.now()
+
+      setTrackAnalysis(analysis.body)
+      setTrackFeatures(features.body)
+      setInitialTrackProgress(currentPlayback.progress_ms + tock)
+      setTrackProgress(currentPlayback.progress_ms + tock)
+      setInitialStart(window.performance.now())
+
+      console.log('analysis set')
+      if (!active) {
+        setActive(true)
+      }
+    },
+    [spotifyApi, currentPlayback, active],
+  )
+
+  // use effect to retrieve the analysis and features of the current song any time the current song changes
   useEffect(() => {
-    // if the player is paused, don't make the request
-    if (!playerState) return
+    if (!currentPlayback) return
+    getAnalysis(currentPlayback?.item?.id)
+  }, [currentPlayback, getAnalysis])
+
+  useEffect(() => {
+    if (!playerState || !spotifyApi) return
 
     const songId = playerState?.track_window?.current_track?.id
 
     if (!songId) return
-    if (!playerState?.paused) return
 
-    if (songId !== currentSongRef.current || !playerState?.paused || !spotifyApi) {
-      currentSongRef.current = songId
-      getAnalysis(songId)
+    if (!initialized || !playerState?.paused) {
+      getPlayback()
     }
-  }, [playerState, getAnalysis, spotifyApi])
+  }, [playerState, getPlayback, spotifyApi, initialized])
 
-  return { player, playerState, analysis, features, playbackData }
+  console.log('==================================================')
+  console.log('misc state')
+  console.log('currentPlayback', currentPlayback)
+  console.log('analysis', trackAnalysis)
+  console.log('features', trackFeatures)
+
+  return { trackAnalysis, trackFeatures, currentPlayback }
 }
-
-// export const useSpotifySongAnalysis = (playerState) => {
-//   const spotifyApi = useSpotifyApi()
-//   const [analysis, setAnalysis] = useState(null)
-//   const [features, setFeatures] = useState(null)
-//   const currentSongRef = useRef(null)
-
-//   const getAnalysis = useCallback(
-//     async (songId) => {
-//       const analysis = await spotifyApi.getAudioAnalysisForTrack(songId)
-//       const features = await spotifyApi.getAudioFeaturesForTrack(songId)
-//       // const playbackData = await spotifyApi.getMyCurrentPlaybackData()
-
-//       setAnalysis(analysis.body)
-//       setFeatures(features.body)
-//     },
-//     [spotifyApi],
-//   )
-
-//   useEffect(() => {
-//     // if the player is paused, don't make the request
-//     if (!playerState) return
-//     console.log('playerState update in use song analysis', playerState)
-
-//     const songId = playerState?.track_window?.current_track?.id
-
-//     // setPaused(playerState?.paused)
-
-//     if (!songId) return
-//     if (!playerState?.paused) return
-
-//     if (songId !== currentSongRef.current || !playerState?.paused) {
-//       currentSongRef.current = songId
-//       getAnalysis(songId)
-//     }
-//   }, [playerState, getAnalysis])
-
-//   return { analysis, features }
-// }

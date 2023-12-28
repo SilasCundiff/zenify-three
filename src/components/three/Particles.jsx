@@ -1,16 +1,16 @@
 'use client'
 import * as THREE from 'three'
-import { interpolateRgb, interpolateBasis } from 'd3-interpolate'
+// import { interpolateRgb, interpolateBasis } from 'd3-interpolate'
 import vertex from '@/helpers/three/shaders/vertex.glsl'
 import fragment from '@/helpers/three/shaders/fragment.glsl'
 import { Center, OrbitControls, shaderMaterial } from '@react-three/drei'
 import { extend, useFrame } from '@react-three/fiber'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useControls } from 'leva'
+import { useSpotifyWebSDK, useSpotifySongAnalysis } from '@/helpers/hooks'
 
-import { useSpotifySongAnalysis, useSpotifyWebSDK } from '@/helpers/hooks'
-import spotifyApi from '@/helpers/spotify'
-import SpotifySync from '@/helpers/managers/SpotifySync'
+// import spotifyApi from '@/helpers/spotify'
+// import SpotifySync from '@/helpers/managers/SpotifySync'
 
 const ParticleMaterial = shaderMaterial(
   {
@@ -30,47 +30,37 @@ const ParticleMaterial = shaderMaterial(
 
 extend({ ParticleMaterial })
 
+const syncWithSpotify = () => {}
+
 export default function Particles() {
-  const { playerState, analysis, features, playbackData } = useSpotifyWebSDK()
-  // const { analysis, features } = useSpotifySongAnalysis()
-  // console.log('playbackState', playerState, playbackData, analysis, features)
+  const { playerState } = useSpotifyWebSDK()
+  const { trackAnalysis, trackFeatures } = useSpotifySongAnalysis(playerState)
+  const [intervalTypes, setIntervalTypes] = useState(['tatums', 'segments', 'beats', 'bars', 'sections'])
+  const [activeIntervals, setActiveIntervals] = useState({
+    tatums: {},
+    segments: {},
+    beats: {},
+    bars: {},
+    sections: {},
+  })
+  const [currentlyPlaying, setCurrentlyPlaying] = useState({})
+  // const [trackAnalysis, setTrackAnalysis] = useState({})
+  // const [trackFeatures, setTrackFeatures] = useState({})
 
-  // console.log('analysis', analysis)
-  // const accessToken = spotifyApi.getAccessToken()
-
-  // console.dir({ analysis, features }, { depth: null, colors: true })
+  const [active, setActive] = useState(false)
+  const [initialized, setInitialized] = useState(false)
+  const [volume, setVolume] = useState(0)
+  const [queues, setQueues] = useState({
+    volume: [],
+    beat: [],
+  })
 
   const particleRef = useRef()
   const pointsRef = useRef()
-  const spotifySync = useRef()
-  const currentAmplitude = useRef(1)
-  const targetAmplitude = useRef(1)
-  const currentFrequency = useRef(1)
-  const targetFrequency = useRef(1)
 
   useFrame(({ clock }) => {
-    currentFrequency.current += (targetFrequency.current - currentFrequency.current) * 0.2
-    particleRef.current.uniforms.amplitude.value = currentFrequency.current
     const time = clock.getElapsedTime()
     particleRef.current.uniforms.time.value = time
-
-    if (!spotifySync.current?.isActive) {
-      currentFrequency.current = 1
-      particleRef.current.uniforms.amplitude.value = currentFrequency.current
-    }
-
-    if (spotifySync.current) {
-      spotifySync.current.on('tatum', (tatum) => {
-        if (spotifySync.current?.isActive) {
-          if (spotifySync.current.volume) {
-            targetFrequency.current = (spotifySync.current.volume * time) / 10
-          }
-        } else {
-          // reset amplitude if not active
-          targetFrequency.current = 1
-        }
-      })
-    }
   })
 
   const particleControls = useControls(
@@ -99,17 +89,7 @@ export default function Particles() {
       pointsRef.current.material.uniforms.offsetGain.value = particleControls.offsetGain
       pointsRef.current.material.uniforms.maxDistance.value = particleControls.maxDistance
     }
-    // console.log('particleControls', meshRef.current.material.uniforms)
   }, [particleControls])
-
-  useEffect(() => {
-    // console.log('anything updated', spotifyApi, analysis, features, playerState, playbackData)
-    spotifySync.current = new SpotifySync({ spotifyApi, analysis, features, playerState, playbackData })
-    // spotifySync.current.updateTrackInfo({ analysis, features, playerState, playbackData })
-    return () => {
-      spotifySync.current = null
-    }
-  }, [analysis, features, playerState, playbackData])
 
   return (
     <>

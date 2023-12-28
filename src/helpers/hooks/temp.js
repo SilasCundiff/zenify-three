@@ -1,164 +1,32 @@
+import Observe from '../util/observe'
+import * as cookies from '../util/cookie'
+import { get } from '../util/network'
+import interpolate from '../util/interpolate'
 import { scaleLog } from 'd3-scale'
 import { min } from 'd3-array'
-
-// Code courtesy of https://github.com/zachwinter/spotify-viz/tree/master
-// Modified to work with Zenify
+import ease from '../util/easing'
 
 /**
- * Common easing functions.
- * https://gist.github.com/gre/1650294
+ * @class Sync
+ *
+ * Creates an interface for analyzing a playing Spotify track in real time.
+ * Exposes event hooks for reacting to changes in intervals.
  */
-export const easingFunctions = {
-  linear(t) {
-    return t
-  },
-  easeInQuad(t) {
-    return t * t
-  },
-  easeOutQuad(t) {
-    return t * (2 - t)
-  },
-  easeInOutQuad(t) {
-    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
-  },
-  easeInCubic(t) {
-    return t * t * t
-  },
-  easeOutCubic(t) {
-    return --t * t * t + 1
-  },
-  easeInOutCubic(t) {
-    return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
-  },
-  easeInQuart(t) {
-    return t * t * t * t
-  },
-  easeOutQuart(t) {
-    return 1 - --t * t * t * t
-  },
-  easeInOutQuart(t) {
-    return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t
-  },
-  easeInQuint(t) {
-    return t * t * t * t * t
-  },
-  easeOutQuint(t) {
-    return 1 + --t * t * t * t * t
-  },
-  easeInOutQuint(t) {
-    return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t
-  },
-}
-
-/**
- * @function ease – Apply an easing function to a progress value [0 - 1].
- * @param { string } method – Selected easing function.
- * @param { integer } smoothing – Smoothing factor. Increase value to reduce the effect of the easing function.
- */
-export function ease(t, method = 'easeOutQuart') {
-  if (!easingFunctions[method]) throw new Error(`Unknown easing function "${method}"`)
-  const progress = Math.min(Math.max(0, t), 1)
-  return easingFunctions[method](progress)
-}
-
-function interpolate(a, b) {
-  return function (t) {
-    return a * (1 - t) + b * t
-  }
-}
-
-function isPrimitive(val) {
-  const type = typeof val
-  return val == null || (type != 'object' && type != 'function')
-}
-
-function Observe(target) {
-  const _target = Object.seal({ ...target })
-
-  /** Store observers for the entire object. */
-  const _observers = {
-    __all__: [],
-  }
-
-  /** Store observers for individual keys. */
-  for (let key in _target) {
-    _observers[key] = []
-  }
-
-  /** Hijack the `set` method for sweet interception action. */
-  const traps = {
-    set(obj, key, val) {
-      let old
-
-      if (isPrimitive(obj[key])) {
-        old = obj[key]
-      } else if (Array.isArray(obj[key])) {
-        old = [...obj[key]]
-      } else {
-        old = { ...obj[key] }
-      }
-
-      obj[key] = val
-
-      if (_observers[key]) {
-        _observers[key].map((observer) => observer(val, old))
-        _observers.__all__.map((observer) => observer(val, old))
-      }
-
-      return true
-    },
-  }
-
-  return new Proxy(
-    {
-      ..._target,
-      watch(key, callback) {
-        /** Watch a single key. */
-        if (typeof key === 'string') {
-          if (key in _observers) {
-            _observers[key].push(callback)
-          }
-        }
-
-        /** Watch entire object. */
-        if (typeof key === 'function') {
-          _observers.__all__.push(key)
-        }
-      },
-    },
-    {
-      set: traps.set,
-    },
-  )
-}
-
-export default class SpotifySync {
-  constructor({
-    spotifyApi,
-    analysis,
-    playerState,
-    playbackData,
-    features,
-    volumeSmoothing = 100,
-    pingDelay = 50,
-  } = {}) {
-    const accessToken = spotifyApi.getAccessToken()
-    const refreshToken = spotifyApi.getRefreshToken()
-
-    this.analysis = analysis
-    this.features = features
-    this.playerState = playerState
-    this.playbackData = playbackData
+export default class Sync {
+  constructor({ volumeSmoothing = 100, pingDelay = 2500 } = {}) {
+    const accessToken = cookies.get('SPOTIFY_ACCESS_TOKEN')
+    const refreshToken = cookies.get('SPOTIFY_REFRESH_TOKEN')
+    const refreshCode = cookies.get('SPOTIFY_REFRESH_CODE')
 
     this.state = Observe({
-      spotifyApi,
-      apiConstants: {
-        currentlyPlayingUri: 'https://api.spotify.com/v1/me/player',
-        trackAnalysisUri: 'https://api.spotify.com/v1/audio-analysis/',
-        trackFeaturesUri: 'https://api.spotify.com/v1/audio-features/',
+      api: {
+        currentlyPlaying: 'https://api.spotify.com/v1/me/player',
+        trackAnalysis: 'https://api.spotify.com/v1/audio-analysis/',
+        trackFeatures: 'https://api.spotify.com/v1/audio-features/',
         tokens: {
           accessToken,
           refreshToken,
+          refreshCode,
         },
         headers: {
           Authorization: 'Bearer ' + accessToken,
@@ -175,8 +43,8 @@ export default class SpotifySync {
         sections: {},
       }),
       currentlyPlaying: {},
-      trackAnalysis: { ...analysis },
-      trackFeatures: { ...features },
+      trackAnalysis: {},
+      trackFeatures: {},
       initialTrackProgress: 0,
       initialStart: 0,
       trackProgress: 0,
@@ -190,12 +58,13 @@ export default class SpotifySync {
       },
     })
 
-    // initialize hook and ping spotify
     this.initHooks()
     this.ping()
   }
 
-  // initialize hooks which are called on each interval for the respective interval type
+  /**
+   * @method initHooks - Initialize interval event hooks.
+   */
   initHooks() {
     this.hooks = {
       tatum: () => {},
@@ -205,7 +74,6 @@ export default class SpotifySync {
       section: () => {},
     }
 
-    // watch for changes in active intervals and call respective hook. e.g. when a new segment is active, call the segment hook
     this.state.activeIntervals.watch('tatums', (t) => this.hooks.tatum(t))
     this.state.activeIntervals.watch('segments', (s) => this.hooks.segment(s))
     this.state.activeIntervals.watch('beats', (b) => this.hooks.beat(b))
@@ -213,49 +81,52 @@ export default class SpotifySync {
     this.state.activeIntervals.watch('sections', (s) => this.hooks.section(s))
   }
 
-  // pings spotify api for currently playing track, forced ping delay
+  /**
+   * @method ping - Ask Spotify for currently playing track, after a specified delay.
+   */
   ping() {
-    setTimeout(() => {
-      return this.getCurrentlyPlaying()
-    }, this.state.apiConstants.pingDelay)
+    setTimeout(() => this.getCurrentlyPlaying(), this.state.api.pingDelay)
   }
-
-  // currently unused
-  updateTrackInfo({ analysis, features, playbackData, playerState }) {
-    // console.log('in update track info', { analysis, features, playbackData, playerState })
-    this.analysis = analysis
-    this.features = features
-    this.currentTrack = playbackData
-    this.player = playerState
-  }
-
-  getCurrentlyPlaying() {
-    if (this.playerState?.paused || !this.playbackData?.item) {
-      this.state.active = false
-      return this.ping()
-    }
-
-    this.processResponse(this.playbackData)
-  }
-
-  // fetches track info from spotify api
-  //   async getCurrentlyPlaying() {
-  //     const { spotifyApi } = this.state
-  //     const data = await spotifyApi.getMyCurrentPlaybackState()
-
-  //     if (!data || !data?.body?.is_playing) {
-  //       if (this.state.active) {
-  //         this.state.active = false
-  //       }
-  //       return this.ping()
-  //     }
-  //     this.processResponse(data.body)
-  //   }
 
   /**
-   * In summary, this method checks if the current state is not initialized,
-   * if the current song is not in sync, or if the state is not active.
-   * If any of these conditions are met, it fetches track info; otherwise, it sends a ping. */
+   * @method getNewToken - Retrieve new access token from server.
+   */
+  async getNewToken() {
+    const { data } = await get(`${PROJECT_ROOT}/refresh?token=${this.state.api.tokens.refreshToken}`)
+    cookies.set('SPOTIFY_ACCESS_TOKEN', data.access_token)
+    this.state.api.tokens.accessToken = data.access_token
+    this.state.api.headers = {
+      Authorization: 'Bearer ' + this.state.api.tokens.accessToken,
+      Accept: 'application/json',
+    }
+    this.ping()
+  }
+
+  /**
+   * @method getCurrentlyPlaying - Ask Spotify for currently playing track.
+   */
+  async getCurrentlyPlaying() {
+    try {
+      const { data } = await get(this.state.api.currentlyPlaying, { headers: this.state.api.headers })
+      if (!data || !data.is_playing) {
+        if (this.state.active === true) {
+          this.state.active = false
+        }
+        return this.ping()
+      }
+
+      this.processResponse(data)
+    } catch ({ status }) {
+      if (status === 401) {
+        return this.getNewToken()
+      }
+    }
+  }
+
+  /**
+   * @method processResponse - Process `currently playing` API response according to state.
+   * @param {object} data - Response from Spotify API.
+   */
   processResponse(data) {
     const songsInSync = JSON.stringify(data.item) === JSON.stringify(this.state.currentlyPlaying)
 
@@ -266,26 +137,22 @@ export default class SpotifySync {
     this.ping()
   }
 
-  getTrackInfo({ item, progress_ms }) {
+  /**
+   * @method getTrackInfo - Fetch track analysis and track features of currently playing track.
+   * @param {object} data - Response from Spotify API.
+   */
+  async getTrackInfo(data) {
     const tick = window.performance.now()
-    // const analysisData = await this.state.spotifyApi.getAudioAnalysisForTrack(item.id)
-    // console.log('data',analysisData)
-    // const featuresData = await this.state.spotifyApi.getAudioFeaturesForTrack(item.id)
-    // const analysis = analysisData.body
-    // const features = featuresData.body
-    const analysis = this.analysis
-    const features = this.state.trackFeatures
-    if (!analysis || !features) {
-      return this.ping()
-    }
-
-    // console.log('in get track info', analysis)
+    const [analysis, features] = await Promise.all([
+      get(this.state.api.trackAnalysis + data.item.id, { headers: this.state.api.headers }).then((res) => res.data),
+      get(this.state.api.trackFeatures + data.item.id, { headers: this.state.api.headers }).then((res) => res.data),
+    ])
 
     this.state.intervalTypes.forEach((t) => {
       const type = analysis[t]
       type[0].duration = type[0].start + type[0].duration
       type[0].start = 0
-      type[type.length - 1].duration = item.duration_ms / 1000 - type[type.length - 1].start
+      type[type.length - 1].duration = data.item.duration_ms / 1000 - type[type.length - 1].start
       type.forEach((interval) => {
         if (interval.loudness_max_time) {
           interval.loudness_max_time = interval.loudness_max_time * 1000
@@ -297,11 +164,11 @@ export default class SpotifySync {
 
     const tock = window.performance.now() - tick
 
-    this.state.currentlyPlaying = item
+    this.state.currentlyPlaying = data.item
     this.state.trackAnalysis = analysis
     this.state.trackFeatures = features
-    this.state.initialTrackProgress = progress_ms + tock
-    this.state.trackProgress = progress_ms + tock
+    this.state.initialTrackProgress = data.progress_ms + tock
+    this.state.trackProgress = data.progress_ms + tock
     this.state.initialStart = window.performance.now()
 
     if (this.state.initialized === false) {
@@ -316,8 +183,9 @@ export default class SpotifySync {
     this.ping()
   }
 
-  // sets active intervals based on track progress
-  //
+  /**
+   * @method setActiveIntervals - Use current track progress to determine active intervals of each type.
+   */
   setActiveIntervals() {
     const determineInterval = (type) => {
       const analysis = this.state.trackAnalysis[type]
@@ -463,4 +331,9 @@ export default class SpotifySync {
     const beat = average(queues.beat)
     this.volume = sizeScale(beat)
   }
+}
+
+export async function auth() {
+  const { data } = await get(`${PROJECT_ROOT}/auth`)
+  window.location.href = `${PROJECT_ROOT}/login?auth_id=${data.auth_id}`
 }
