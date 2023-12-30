@@ -35,16 +35,6 @@ export default function SimplePlayer() {
     prevTrackNameRef.current = currentTrackName
   }, [playerState])
 
-  useEffect(() => {
-    const audioCtx = new AudioContext()
-    const oscillatorNode = audioCtx.createOscillator()
-    const gainNode = audioCtx.createGain()
-    const finish = audioCtx.destination
-
-    oscillatorNode.connect(gainNode)
-    gainNode.connect(finish)
-  }, [nowPlaying])
-
   return (
     <div>
       <div className='flex h-screen w-full flex-col items-center justify-center bg-transparent  text-white'>

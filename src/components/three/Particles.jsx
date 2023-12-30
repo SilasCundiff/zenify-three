@@ -43,48 +43,87 @@ export default function Particles() {
   const spotifySync = useRef()
   const timeRef = useRef(0)
 
-  useFrame(({ clock }) => {
+  useFrame((state, delta) => {
     if (spotifySync?.current.time && spotifySync && playerState?.paused === false) {
       pointsRef.current.material.uniforms.time.value =
         (spotifySync.current?.time / 1000) * spotifySync?.current.volume * 0.5
 
-      // average pitch value * time
+      const timbreAvg = spotifySync.current?.getInterval('segment').timbre.reduce((a, b) => a + b, 0) / 12
+
       const pitchAvg =
         spotifySync.current?.getInterval('segment').pitches.reduce((a, b) => a + b, 0) /
         spotifySync.current?.getInterval('segment').pitches.length
-      const minPitch = 0 // replace with the minimum possible value of pitchAvg
-      const maxPitch = 1 // replace with the maximum possible value of pitchAvg
 
-      const normalizedPitch = (pitchAvg - minPitch) / (maxPitch - minPitch) // normalize to 0-1
-      const hue = normalizedPitch * 360 // scale to 0-360
-      const startColor = new THREE.Color('hsl(' + hue + ', 100%, 50%)')
-      const endColor = new THREE.Color('hsl(' + (hue + 120) + ', 100%, 50%)')
+      const minPitch = 0
+      const maxPitch = 1
 
+      const normalizedPitch = (pitchAvg - minPitch) / (maxPitch - minPitch)
+      const newFrequency = normalizedPitch
+
+      const minLoudness = -20 // replace with the minimum possible value of loudness_max
+      const maxLoudness = 0 // replace with the maximum possible value of loudness_max
+
+      const normalizedLoudness =
+        (spotifySync.current?.getInterval('segment').loudness_max - minLoudness) / (maxLoudness - minLoudness) // normalize to 0-1
+      const reversedFrequency = 1 - normalizedLoudness // reverse so that 0 becomes 1 and 1 becomes 0
+      const defaultSize = 2.5
+      const newSize = (defaultSize / reversedFrequency) * 0.05
+      const clampedSize = Math.min(Math.max(newSize, 1.5), 5)
+
+      // pointsRef.current.material.uniforms.size.value = clampedSize
+
+      const minTimbre = 0
+      const maxTimbre = 1
+
+      const normalizedTimbre = (timbreAvg - minTimbre) / (maxTimbre - minTimbre)
+      const hue = normalizedTimbre * 360
+      const startColor = new THREE.Color('hsl(' + hue + 20 + ', 100%, 50%)')
+      const endColor = new THREE.Color('hsl(' + (hue + 60) + ', 100%, 50%)')
+
+      // Animate the start color
+      gsap.to(pointsRef.current.material.uniforms.startColor.value, {
+        r: startColor.r,
+        g: startColor.g,
+        b: startColor.b,
+        duration: 1, // Adjust the duration to make the transition slower or faster
+        onUpdate: () => {
+          pointsRef.current.material.uniforms.startColor.needsUpdate = true
+        },
+      })
+
+      // Animate the end color
+      gsap.to(pointsRef.current.material.uniforms.endColor.value, {
+        r: endColor.r,
+        g: endColor.g,
+        b: endColor.b,
+        duration: 1, // Adjust the duration to make the transition slower or faster
+        onUpdate: () => {
+          pointsRef.current.material.uniforms.endColor.needsUpdate = true
+        },
+      })
+    } else {
+      pointsRef.current.material.uniforms.time.value += delta
+      const startColor = new THREE.Color('hsl(0, 100%, 50%)')
+      const endColor = new THREE.Color('hsl(240, 100%, 50%)')
       pointsRef.current.material.uniforms.startColor.value = startColor
       pointsRef.current.material.uniforms.endColor.value = endColor
-    } else {
-      pointsRef.current.material.uniforms.time.value = timeRef.current
-
-      // random rotation based on time value, use pi and math.random
-      pointsRef.current.rotation.z = Math.PI * Math.random() * timeRef.current
+      pointsRef.current.material.uniforms.size.value = 2.5
     }
-
-    // if (particleRef.current) {
-    //   particleRef.current.uniforms.time.value = clock.getElapsedTime()
-    // }
   })
 
   const particleControls = useControls(
     'Particles',
     {
       offsetSize: { value: 2, min: 0, max: 10, step: 0.1 },
-      size: { value: 2.5, min: 0, max: 10, step: 0.1 },
+      size: { value: 4.5, min: 0, max: 10, step: 0.1 },
       frequency: { value: 2, min: 0, max: 10, step: 0.1 },
-      amplitude: { value: 1, min: 0, max: 10, step: 0.1 },
-      offsetGain: { value: 0, min: 0, max: 10, step: 0.1 },
-      maxDistance: { value: 1.8, min: 0, max: 10, step: 0.1 },
-      startColor: new THREE.Color('hsl(0, 100%, 50%)'), // red
-      endColor: new THREE.Color('hsl(240, 100%, 50%)'), // blue
+      amplitude: { value: 1.1, min: 0, max: 10, step: 0.1 },
+      offsetGain: { value: 0.0, min: 0, max: 10, step: 0.1 },
+      maxDistance: { value: 2, min: 0, max: 10, step: 0.1 },
+      // startColor: new THREE.Color('hsl(0, 100%, 50%)'), // red
+      // endColor: new THREE.Color('hsl(240, 100%, 50%)'), // blue
+      count: { value: 20, min: 0, max: 200, step: 10 },
+      geomeTry: 'box',
     },
     { collapsed: true },
   )
@@ -105,24 +144,28 @@ export default function Particles() {
   useEffect(() => {
     spotifySync.current = new SpotifySync({ spotifyApi, canvasRef: pointsRef.current })
 
-    spotifySync.current?.on('segment', (segment) => {
-      console.log('segment', segment)
-    })
     spotifySync.current?.on('beat', (beat) => {
-      // get the current active interval from spotifySync
-      console.log('in beat', spotifySync.current?.getInterval('beat'))
-
       if (pointsRef.current && spotifySync.current.time) {
+        const pitchAvg =
+          spotifySync.current?.getInterval('segment').pitches.reduce((a, b) => a + b, 0) /
+          spotifySync.current?.getInterval('segment').pitches.length
         if (Math.random() < 0.5) {
           gsap.to(pointsRef.current.rotation, {
             duration: beat.duration, // Either a longer or BPM-synced duration
             // y: Math.random() * Math.PI * 2,
-            z: Math.random() * Math.PI,
+            z: Math.random() * Math.PI * pitchAvg * 10,
+            ease: 'elastic.out(0.2)',
+          })
+        }
+        if (Math.random() > 0.5) {
+          gsap.to(pointsRef.current.rotation, {
+            duration: beat.duration, // Either a longer or BPM-synced duration
+            // y: Math.random() * Math.PI * 5,
+            z: -Math.random() * Math.PI * pitchAvg * 10,
             ease: 'elastic.out(0.2)',
           })
         }
       }
-      console.log('pointsRef', pointsRef.current.rotation.x)
     })
 
     return () => {
@@ -135,7 +178,7 @@ export default function Particles() {
       <Center>
         <OrbitControls makeDefault />
         <points ref={pointsRef}>
-          <boxGeometry args={[3, 3, 3, 10, 10, 10]} />
+          <boxGeometry args={[20, 20, 20, particleControls.count, particleControls.count, particleControls.count]} />
           <particleMaterial ref={particleRef} side={THREE.DoubleSide} transparent />
         </points>
       </Center>
