@@ -207,6 +207,10 @@ export default class SpotifySync {
 
   async getCurrentlyPlaying() {
     const { spotifyApi } = this.state
+    const token = this.state.spotifyApi.getAccessToken()
+    if (!token) {
+      return this.ping()
+    }
     const data = await spotifyApi.getMyCurrentPlaybackState()
 
     if (!data || !data?.body?.is_playing) {
@@ -229,6 +233,12 @@ export default class SpotifySync {
   }
 
   async getTrackInfo({ item, progress_ms }) {
+    // check token {}
+    const token = this.state.spotifyApi.getAccessToken()
+    if (!token) {
+      return this.ping()
+    }
+
     const tick = window.performance.now()
     const analysisData = await this.state.spotifyApi.getAudioAnalysisForTrack(item.id)
     const featuresData = await this.state.spotifyApi.getAudioFeaturesForTrack(item.id)

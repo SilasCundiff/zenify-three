@@ -1,7 +1,14 @@
+'use client'
 /* eslint-disable tailwindcss/no-custom-classname */
+
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 function Welcome() {
+  // check to see if user is authenticated
+  const { status } = useSession()
+
+  console.log('status', status)
   return (
     <>
       <div className='flex flex-col items-center justify-center'>
@@ -14,9 +21,11 @@ function Welcome() {
         </p>
       </div>
       <div className='flex'>
-        <button className='text-md mb-2 px-4 py-3 font-extrabold text-white underline underline-offset-2'>
-          <Link href='/'>Player Home</Link>
-        </button>
+        {status === 'authenticated' && (
+          <button className='text-md mb-2 px-4 py-3 font-extrabold text-white underline underline-offset-2'>
+            <Link href='/'>Player Home</Link>
+          </button>
+        )}
         <button className='text-md mb-2 px-4 py-3 font-extrabold text-white underline underline-offset-2'>
           <Link href='/login'>Return to login</Link>
         </button>
