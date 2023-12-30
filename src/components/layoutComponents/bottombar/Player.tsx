@@ -2,10 +2,10 @@
 'use client'
 import { VolumeUpIcon as VolumeDownIcon } from '@heroicons/react/outline'
 import { debounce } from 'lodash'
-import { useSpotify, useSelectedSongStore, usePlaybackStore } from '@/helpers/hooks'
+import { useSpotifyApi, useSpotifyWebSDK } from '@/helpers/hooks'
 import NowPlayingInfo from './NowPlayingInfo'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   RewindIcon,
   SwitchHorizontalIcon,
@@ -16,165 +16,19 @@ import {
 } from '@heroicons/react/solid'
 
 const Player = () => {
-  const { selectedSong } = useSelectedSongStore()
-  const { nowPlaying, isPlaying, setIsPlaying, isActive, setIsActive, setNowPlaying } = usePlaybackStore()
-  const [player, setPlayer] = useState<Spotify.Player | null>(null)
-  const [volume, setVolume] = useState(10)
-
-  const spotifyApi = useSpotify()
-
-  const token = spotifyApi.getAccessToken()
-
-  const playTrack = useCallback(() => {
-    if (selectedSong === null || selectedSong.context === null) {
-      console.log('no song selected')
-      return
-    }
-    spotifyApi
-      .play({
-        context_uri: selectedSong?.context.uri,
-        offset: { position: selectedSong?.offset },
-      })
-      .then((res) => {
-        console.log('res', player)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  }, [player, selectedSong, spotifyApi])
-
-  const handleVolumeChange = (value) => {
-    setVolume(value)
-  }
-
-  const handleVolumeIncrease = () => {
-    if (volume < 90) {
-      return setVolume(volume + 10)
-    }
-    if (volume >= 90) {
-      return setVolume(100)
-    }
-  }
-
-  const handleVolumeDecrease = () => {
-    if (volume > 10) {
-      return setVolume(volume - 10)
-    }
-    if (volume <= 10) {
-      return setVolume(0)
-    }
-  }
-
-  const debouncedVolumeChange = useCallback(
-    (volume: number) => {
-      const debounced = debounce(() => {
-        spotifyApi.setVolume(volume).catch((err) => {
-          // TODO: provide error feedback to user
-          console.log(err)
-        })
-      }, 500)
-      debounced()
-    },
-    [spotifyApi],
-  )
-
-  // const renderPlayer = useCallback(() => {
-  //   // check to see if the player is already added to the DOM to prevent multiple instances of the player
-  //   if (token && !window.Spotify) {
-  //     const script = document.createElement('script')
-  //     script.src = 'https://sdk.scdn.co/spotify-player.js'
-  //     script.async = true
-
-  //     document.body.appendChild(script)
-
-  //     window.onSpotifyWebPlaybackSDKReady = () => {
-  //       const player = new window.Spotify.Player({
-  //         name: 'Zenify 2',
-  //         getOAuthToken: (cb) => {
-  //           cb(token)
-  //         },
-  //       })
-  //       console.log(player, 'player')
-
-  //       setPlayer(player)
-
-  //       player.addListener('ready', ({ device_id }) => {
-  //         console.log('Ready with Device ID', device_id)
-  //       })
-
-  //       player.addListener('not_ready', ({ device_id }) => {
-  //         console.log('Device ID has gone offline', device_id)
-  //       })
-
-  //       player.addListener('player_state_changed', (state) => {
-  //         if (!state) {
-  //           return
-  //         }
-
-  //         setIsPlaying(state.paused)
-  //         // @ts-ignore
-  //         setNowPlaying(state.track_window.current_track)
-
-  //         player.getCurrentState().then((state) => {
-  //           if (!state) {
-  //             setIsActive(false)
-  //           } else {
-  //             setIsActive(true)
-  //           }
-  //         })
-  //       })
-
-  //       player.connect()
-
-  //       return () => {
-  //         player.disconnect()
-  //       }
-  //     }
-  //   }
-  // }, [token, setIsPlaying, setNowPlaying, setIsActive])
-
-  useEffect(() => {
-    if (selectedSong?.id) {
-      playTrack()
-    }
-  }, [selectedSong, playTrack])
+  const { player, playerState } = useSpotifyWebSDK()
+  // const prevTrackNameRef = useRef('')
+  // const [nowPlaying, setNowPlaying] = useState(null)
 
   // useEffect(() => {
-  //   renderPlayer()
-  // }, [token, renderPlayer])
+  //   const currentTrackName = playerState?.track_window.current_track.name
+  //   if (playerState && prevTrackNameRef.current !== currentTrackName) {
+  //     setNowPlaying(currentTrackName)
+  //   }
+  //   prevTrackNameRef.current = currentTrackName
+  // }, [playerState])
 
-  useEffect(() => {
-    if (volume > 0 && volume < 100) {
-      debouncedVolumeChange(volume)
-    }
-  }, [volume, debouncedVolumeChange])
-
-  useEffect(() => {
-    // if (!player) {
-    //   return
-    // }
-
-    // player.getCurrentState().then((state) => {
-    //   if (!state) {
-    //     setIsActive(false)
-    //   } else {
-    //     setIsActive(true)
-    //   }
-    // })
-    ;(async () => {
-      spotifyApi.getMyCurrentPlaybackState().then((res) => {
-        console.log('res', res)
-      })
-    })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // if (!player) {
-  //   console.log(player, 'player')
-  //   return <>no player</>
-  // }
-
-  if (!isActive) {
+  if (!player) {
     return (
       <div className='flex h-24 min-h-24 w-full shrink-0 px-2 text-xs md:px-6 md:text-base '>
         <p className='m-auto'>
@@ -185,19 +39,27 @@ const Player = () => {
     )
   }
 
+  // console.log('playerState', playerState, player)
   // console.log('nowPlaying', nowPlaying)
   // console.log('selectedSong', selectedSong)
+
+  if (!playerState) {
+    return (
+      <div className='flex h-24 min-h-24 w-full shrink-0 px-2 text-xs md:px-6 md:text-base '>
+        <p className='m-auto'>Fetching your jams 🎧</p>
+      </div>
+    )
+  }
 
   return (
     <div>
       <div className='grid h-24 min-h-24 w-full shrink-0 grid-cols-3 px-2 text-xs md:px-6 md:text-base'>
-        <NowPlayingInfo songData={nowPlaying} />
+        <NowPlayingInfo songData={playerState?.track_window.current_track} />
         <div className='flex w-full items-center justify-center text-4xl '>
-          <SwitchHorizontalIcon className='button' />
+          {/* <SwitchHorizontalIcon className='button' /> */}
           <div className='ml-8 mr-[64px] flex items-center  justify-center space-x-4'>
             <RewindIcon className='button h-10 w-10' onClick={() => player.previousTrack()} />
-
-            {!isPlaying ? (
+            {playerState && !playerState.paused ? (
               <PauseIcon className='button h-12 w-12' onClick={() => player.pause()} />
             ) : (
               <PlayIcon className='button h-12 w-12' onClick={() => player.resume()} />
@@ -205,7 +67,7 @@ const Player = () => {
             <FastForwardIcon className='button h-10 w-10' onClick={() => player.nextTrack()} />
           </div>
         </div>
-        <div className=' flex items-center justify-end space-x-3 pr-5 md:space-x-4'>
+        {/* <div className=' flex items-center justify-end space-x-3 pr-5 md:space-x-4'>
           <VolumeDownIcon className='button' onClick={handleVolumeDecrease} />
           <input
             className='volume-slider w-14 md:w-28'
@@ -216,7 +78,7 @@ const Player = () => {
             onChange={(e) => handleVolumeChange(Number(e.target.value))}
           />
           <VolumeUpIcon className='button' onClick={handleVolumeIncrease} />
-        </div>
+        </div> */}
       </div>
     </div>
   )

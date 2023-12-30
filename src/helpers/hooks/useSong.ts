@@ -28,7 +28,6 @@ type PlaybackState = {
   setNowPlaying: (nowPlaying: PlaybackSong) => void
   setIsPlaying: (isPlaying: boolean) => void
   setIsActive: (isActive: boolean) => void
-  testFunc: (token: string) => void
 }
 
 export const usePlaybackStore = create<PlaybackState>((set) => ({
@@ -38,18 +37,4 @@ export const usePlaybackStore = create<PlaybackState>((set) => ({
   setNowPlaying: (nowPlaying) => set({ nowPlaying }),
   setIsPlaying: (isPlaying) => set({ isPlaying }),
   setIsActive: (isActive) => set({ isActive }),
-  testFunc: (token) => tempFunc(token),
 }))
-
-const tempFunc = async (token: string) => {
-  const res = await fetch('https://api.spotify.com/v1/me/player', {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-
-  const data = await res.json()
-
-  // console.log('this is the data in the temp func', data)
-}

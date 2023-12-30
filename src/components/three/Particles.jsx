@@ -115,15 +115,17 @@ export default function Particles() {
     'Particles',
     {
       offsetSize: { value: 2, min: 0, max: 10, step: 0.1 },
-      size: { value: 4.5, min: 0, max: 10, step: 0.1 },
-      frequency: { value: 2, min: 0, max: 10, step: 0.1 },
+      // size: { value: 4.5, min: 0, max: 10, step: 0.1 },
+      // frequency: { value: 2, min: 0, max: 10, step: 0.1 },
       amplitude: { value: 1.1, min: 0, max: 10, step: 0.1 },
       offsetGain: { value: 0.0, min: 0, max: 10, step: 0.1 },
       maxDistance: { value: 2, min: 0, max: 10, step: 0.1 },
       // startColor: new THREE.Color('hsl(0, 100%, 50%)'), // red
       // endColor: new THREE.Color('hsl(240, 100%, 50%)'), // blue
-      count: { value: 20, min: 0, max: 200, step: 10 },
-      geomeTry: 'box',
+      count: { value: 200, min: 0, max: 500, step: 10 },
+      geometryShape: {
+        options: ['TorusGeometry', 'BoxGeometry', 'SphereGeometry', 'CylinderGeometry'],
+      },
     },
     { collapsed: true },
   )
@@ -133,8 +135,8 @@ export default function Particles() {
       pointsRef.current.material.uniforms.startColor.value = new THREE.Color(particleControls.startColor)
       pointsRef.current.material.uniforms.endColor.value = new THREE.Color(particleControls.endColor)
       pointsRef.current.material.uniforms.offsetSize.value = particleControls.uOffsetSize
-      pointsRef.current.material.uniforms.size.value = particleControls.size
-      pointsRef.current.material.uniforms.frequency.value = particleControls.frequency
+      // pointsRef.current.material.uniforms.size.value = particleControls.size
+      // pointsRef.current.material.uniforms.frequency.value = particleControls.frequency
       pointsRef.current.material.uniforms.amplitude.value = particleControls.amplitude
       pointsRef.current.material.uniforms.offsetGain.value = particleControls.offsetGain
       pointsRef.current.material.uniforms.maxDistance.value = particleControls.maxDistance
@@ -178,7 +180,35 @@ export default function Particles() {
       <Center>
         <OrbitControls makeDefault />
         <points ref={pointsRef}>
-          <boxGeometry args={[20, 20, 20, particleControls.count, particleControls.count, particleControls.count]} />
+          {
+            // return the selected geometry
+            (() => {
+              switch (particleControls.geometryShape) {
+                case 'BoxGeometry':
+                  return (
+                    <boxGeometry
+                      args={[
+                        2,
+                        2,
+                        2,
+                        particleControls.count / 10,
+                        particleControls.count / 10,
+                        particleControls.count / 10,
+                      ]}
+                    />
+                  )
+                case 'SphereGeometry':
+                  return <sphereGeometry args={[2, particleControls.count, particleControls.count]} />
+                case 'CylinderGeometry':
+                  return <cylinderGeometry args={[2, 2, 2, particleControls.count]} />
+                case 'TorusGeometry':
+                  return <torusGeometry args={[2, 1, 32, particleControls.count]} />
+                default:
+                  return <torusGeometry args={[2, 1, 32, particleControls.count]} />
+              }
+            })()
+          }
+
           <particleMaterial ref={particleRef} side={THREE.DoubleSide} transparent />
         </points>
       </Center>

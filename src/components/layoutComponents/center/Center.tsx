@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useSpotify } from '@/helpers/hooks/useSpotify'
+import { useSpotifyApi } from '@/helpers/hooks/useSpotify'
 import { useSession } from 'next-auth/react'
 import { useSelectedPlaylistStore } from '@/helpers/hooks/usePlaylist'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
@@ -10,7 +10,7 @@ import PlaylistHeader from './PlaylistHeader'
 function CenterContent() {
   const { playlist } = useSelectedPlaylistStore()
   const [playlistData, setPlaylistData] = useState(null)
-  const spotifyApi = useSpotify()
+  const spotifyApi = useSpotifyApi()
   const { status } = useSession()
 
   useEffect(() => {

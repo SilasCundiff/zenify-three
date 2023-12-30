@@ -2,10 +2,10 @@
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
 import ListItem from './ListItem'
-import { useSpotify } from '@/helpers/hooks'
+import { useSpotifyApi } from '@/helpers/hooks'
 
 function Playlist() {
-  const spotifyApi = useSpotify()
+  const spotifyApi = useSpotifyApi()
   const { data: session } = useSession()
   const [playlists, setPlaylists] = useState(null)
 
