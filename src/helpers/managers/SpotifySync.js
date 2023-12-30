@@ -1,5 +1,6 @@
 import { scaleLog } from 'd3-scale'
 import { min } from 'd3-array'
+import { useTokenStore } from '../hooks'
 
 /**
  * Common easing functions.
@@ -130,9 +131,11 @@ function Observe(target) {
 }
 
 export default class SpotifySync {
-  constructor({ spotifyApi, volumeSmoothing = 100, pingDelay = 2500 } = {}) {
-    const accessToken = spotifyApi.getAccessToken()
-    const refreshToken = spotifyApi.getRefreshToken()
+  constructor({ canvasRef, spotifyApi, volumeSmoothing = 100, pingDelay = 2500 } = {}) {
+    const accessToken = useTokenStore.getState().accessToken
+    // const refreshToken = spotifyApi.getRefreshToken()
+
+    this.canvas = canvasRef
 
     this.state = Observe({
       spotifyApi,
@@ -142,7 +145,7 @@ export default class SpotifySync {
         trackFeaturesUri: 'https://api.spotify.com/v1/audio-features/',
         tokens: {
           accessToken,
-          refreshToken,
+          // refreshToken,
         },
         headers: {
           Authorization: 'Bearer ' + accessToken,
@@ -168,6 +171,7 @@ export default class SpotifySync {
       initialized: false,
       volumeSmoothing,
       volume: 0,
+      time: 0,
       queues: {
         volume: [],
         beat: [],
@@ -204,7 +208,6 @@ export default class SpotifySync {
   async getCurrentlyPlaying() {
     const { spotifyApi } = this.state
     const data = await spotifyApi.getMyCurrentPlaybackState()
-    console.log(data?.body)
 
     if (!data || !data?.body?.is_playing) {
       if (this.state.active) {
@@ -231,8 +234,6 @@ export default class SpotifySync {
     const featuresData = await this.state.spotifyApi.getAudioFeaturesForTrack(item.id)
     const analysis = analysisData.body
     const features = featuresData.body
-
-    console.log(analysis, features)
 
     this.state.intervalTypes.forEach((t) => {
       const type = analysis[t]
@@ -374,11 +375,15 @@ export default class SpotifySync {
    * @param {DOMHighResTimeStamp} now
    */
   tick(now) {
+    const time = now
     requestAnimationFrame(this.tick.bind(this))
-    if (!this.state.active) return
+    if (!this.state.active) {
+      this.canvas.material.uniforms.time.value = time / 1000
+      return
+    }
 
     /** Set track progress and active intervals. */
-    this.state.trackProgress = now - this.state.initialStart + this.state.initialTrackProgress
+    this.state.trackProgress = time - this.state.initialStart + this.state.initialTrackProgress
     this.setActiveIntervals()
 
     /** Get current volume. */
@@ -413,5 +418,9 @@ export default class SpotifySync {
     /** Average the beat queue, then pass it to our size scale. */
     const beat = average(queues.beat)
     this.volume = sizeScale(beat)
+
+    this.time = time
+
+    // this.canvas.material.uniforms.maxDistance.value =
   }
 }

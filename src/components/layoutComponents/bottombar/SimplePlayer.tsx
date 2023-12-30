@@ -5,7 +5,7 @@ import { use, useEffect, useRef, useState } from 'react'
 
 export default function SimplePlayer() {
   const { player, playerState } = useSpotifyWebSDK()
-  const prevTrackNameRef = useRef()
+  const prevTrackNameRef = useRef('')
   const spotifyApi = useSpotifyApi()
   const [nowPlaying, setNowPlaying] = useState(null)
 

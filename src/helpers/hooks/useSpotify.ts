@@ -1,6 +1,55 @@
 import { useSession, signIn } from 'next-auth/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import spotifyApi from '@/helpers/spotify'
+import { create } from 'zustand'
+
+type TokenState = {
+  accessToken: string
+  refreshToken: string
+}
+
+type TokenActions = {
+  setBothTokens: (accessToken: string, refreshToken: string) => void
+  setAccessToken: (accessToken: string) => void
+  setRefreshToken: (refreshToken: string) => void
+  getAccessToken: () => string
+  getRefreshToken: () => string
+}
+
+type TokenStore = TokenState & TokenActions
+
+export const useTokenStore = create<TokenStore>((set, get) => ({
+  accessToken: '',
+  refreshToken: '',
+  setBothTokens: (accessToken, refreshToken) => set(() => ({ accessToken, refreshToken })),
+  setAccessToken: (accessToken) => set(() => ({ accessToken })),
+  setRefreshToken: (refreshToken) => set(() => ({ refreshToken })),
+  getAccessToken: () => get().accessToken,
+  getRefreshToken: () => get().refreshToken,
+}))
+
+type SpotifyPlayerState = {
+  player: Spotify.Player | null
+  playerState: Spotify.PlaybackState | null
+}
+
+type SpotifyPlayerActions = {
+  setPlayer: (player: Spotify.Player | null) => void
+  setPlayerState: (playerState: Spotify.PlaybackState | null) => void
+  getPlayer: () => Spotify.Player | null
+  getPlayerState: () => Spotify.PlaybackState | null
+}
+
+type SpotifyPlayerStore = SpotifyPlayerState & SpotifyPlayerActions
+
+const useSpotifyPlayerStore = create<SpotifyPlayerStore>((set, get) => ({
+  player: null,
+  playerState: null,
+  setPlayer: (player) => set(() => ({ player })),
+  setPlayerState: (playerState) => set(() => ({ playerState })),
+  getPlayer: () => get().player,
+  getPlayerState: () => get().playerState,
+}))
 
 /**A
  * @returns {SpotifyWebApi} An instance of the SpotifyWebApi object with the access token set.
@@ -11,16 +60,18 @@ import spotifyApi from '@/helpers/spotify'
  */
 export const useSpotifyApi = () => {
   const { data: session, status } = useSession()
+  const { setBothTokens } = useTokenStore()
 
   useEffect(() => {
     if (session) {
       if (session.error === 'Failed to refresh access token') {
         signIn()
       }
-
       spotifyApi.setAccessToken(session.accessToken)
+      spotifyApi.setRefreshToken(session.refreshToken)
+      setBothTokens(session.accessToken, session.refreshToken)
     }
-  }, [session])
+  }, [session, setBothTokens])
 
   return spotifyApi
 }
@@ -40,10 +91,7 @@ export const useSpotifyWebSDK = () => {
   const spotifyApi = useSpotifyApi()
   const token = spotifyApi.getAccessToken()
   const [isReady, setIsReady] = useState(false)
-  // the player object, has methods like player.togglePlay(), player.nextTrack(), etc.
-  const [player, setPlayer] = useState(null)
-  // the player state, has properties like playerState.track_window.current_track.name, playerState.paused, etc.
-  const [playerState, setPlayerState] = useState(null)
+  const { player, playerState, setPlayer, setPlayerState } = useSpotifyPlayerStore()
 
   useEffect(() => {
     // prevent duplicate script injection
@@ -104,7 +152,7 @@ export const useSpotifyWebSDK = () => {
     return () => {
       player.disconnect()
     }
-  }, [token, isReady, spotifyApi])
+  }, [token, isReady, spotifyApi, setPlayer, setPlayerState])
 
   return { player, playerState }
 }
