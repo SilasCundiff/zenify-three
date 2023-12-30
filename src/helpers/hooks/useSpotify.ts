@@ -124,11 +124,18 @@ export const useSpotifyWebSDK = () => {
       volume: 0.01,
     })
 
-    player.setVolume(0.01)
-    player.addListener('ready', ({ device_id }) => {
-      spotifyApi.transferMyPlayback([device_id])
+    player.addListener('ready', async ({ device_id }) => {
+      const devices = await spotifyApi.getMyDevices()
 
-      spotifyApi.setVolume(1, { device_id })
+      // find the device id of the web player
+      const webPlayer = devices.body.devices.find((device) => device.id === device_id)
+
+      // transfer playback to the web player
+      if (!webPlayer) {
+        return
+      }
+      spotifyApi.transferMyPlayback([webPlayer.id])
+      spotifyApi.setVolume(1, { device_id: webPlayer.id })
     })
 
     // TODO: possibly use this to update UI
@@ -150,43 +157,43 @@ export const useSpotifyWebSDK = () => {
     player.connect()
 
     return () => {
-      player.disconnect()
+      if (player) player.disconnect()
     }
   }, [token, isReady, spotifyApi, setPlayer, setPlayerState])
 
   return { player, playerState }
 }
 
-export const useSpotifySongAnalysis = () => {
-  const spotifyApi = useSpotifyApi()
-  const { playerState } = useSpotifyWebSDK()
-  const [analysis, setAnalysis] = useState(null)
-  const [features, setFeatures] = useState(null)
-  const currentSongRef = useRef(null)
+// export const useSpotifySongAnalysis = () => {
+//   const spotifyApi = useSpotifyApi()
+//   const { playerState } = useSpotifyWebSDK()
+//   const [analysis, setAnalysis] = useState(null)
+//   const [features, setFeatures] = useState(null)
+//   const currentSongRef = useRef(null)
 
-  const getAnalysis = useCallback(
-    async (songId) => {
-      const analysis = await spotifyApi.getAudioAnalysisForTrack(songId)
-      const features = await spotifyApi.getAudioFeaturesForTrack(songId)
+//   const getAnalysis = useCallback(
+//     async (songId) => {
+//       const analysis = await spotifyApi.getAudioAnalysisForTrack(songId)
+//       const features = await spotifyApi.getAudioFeaturesForTrack(songId)
 
-      setAnalysis(analysis)
-      setFeatures(features)
-    },
-    [spotifyApi],
-  )
+//       setAnalysis(analysis)
+//       setFeatures(features)
+//     },
+//     [spotifyApi],
+//   )
 
-  useEffect(() => {
-    if (!playerState) return
+//   useEffect(() => {
+//     if (!playerState) return
 
-    const songId = playerState?.track_window?.current_track?.id
+//     const songId = playerState?.track_window?.current_track?.id
 
-    if (!songId) return
+//     if (!songId) return
 
-    if (songId !== currentSongRef.current) {
-      currentSongRef.current = songId
-      getAnalysis(songId)
-    }
-  }, [playerState, getAnalysis])
+//     if (songId !== currentSongRef.current) {
+//       currentSongRef.current = songId
+//       getAnalysis(songId)
+//     }
+//   }, [playerState, getAnalysis])
 
-  return { analysis, features }
-}
+//   return { analysis, features }
+// }
