@@ -7,10 +7,10 @@ import Center from '@/components/layoutComponents/center/Center'
 
 export default function Page() {
   return (
-    <div className='flex min-h-screen  w-full flex-col justify-between text-white'>
-      <div className='flex min-h-[calc(100vh-96px)] basis-full overflow-hidden'>
-        <LeftSidebar />
-        <div className='min-w-[calc(100%-320px)]'>
+    <div className='flex flex-col justify-between text-white'>
+      <div className='flex basis-full overflow-hidden'>
+        {/* <LeftSidebar /> */}
+        <div className='w-full'>
           <Topbar />
           <Center />
         </div>

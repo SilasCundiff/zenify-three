@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { Noto_Sans_Display } from 'next/font/google'
+import { Noto_Sans_Display, Zen_Kaku_Gothic_New } from 'next/font/google'
 import { getServerSession } from 'next-auth'
 
 import PageWrapper from '@/components/dom/PageWrapper'
@@ -14,6 +14,10 @@ const natoSansDisplay = Noto_Sans_Display({
   subsets: ['latin-ext'],
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
 })
+const zenKakuGothicNew = Zen_Kaku_Gothic_New({
+  subsets: ['latin-ext'],
+  weight: ['300', '400', '500', '700', '900'],
+})
 
 export const metadata: Metadata = {
   title: 'Zenify',
@@ -23,12 +27,11 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }) {
   const session = await getServerSession(authOptions)
   return (
-    <html lang='en' className={`${natoSansDisplay.className} antialiased`}>
+    <html lang='en' className={`${zenKakuGothicNew.className} antialiased`}>
       <head />
       <body>
         <Provider session={session}>
           <PageWrapper>{children}</PageWrapper>
-          {/* <SimplePlayer /> */}
           <ParticleCanvas />
         </Provider>
       </body>

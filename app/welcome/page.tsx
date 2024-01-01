@@ -8,7 +8,6 @@ function Welcome() {
   // check to see if user is authenticated
   const { status } = useSession()
 
-  console.log('status', status)
   return (
     <>
       <div className='flex flex-col items-center justify-center'>

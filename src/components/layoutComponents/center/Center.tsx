@@ -27,26 +27,24 @@ function CenterContent() {
     }
   }, [playlist, spotifyApi, status])
 
-  if (status !== 'authenticated') {
-    return (
-      <div className='flex  h-[calc(100%-96px)] w-full justify-center align-middle'>
-        <div className=' m-auto h-[calc(100%-16px)] w-[calc(100%-16px)] rounded-lg'>
-          <div className='flex h-full flex-col justify-center align-middle'>
-            <LoadingSpinner size='large' />
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // if (status !== 'authenticated') {
+  //   return (
+  //     <div className='flex  w-full justify-center bg-amber-200 align-middle'>
+  //       <div className=' m-auto   rounded-lg'>
+  //         <div className='flex h-full flex-col justify-center align-middle'>
+  //           <LoadingSpinner size='large' />
+  //         </div>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   if (!playlistData) {
     return (
-      <div className='flex  h-[calc(100%-96px)] w-full justify-center align-middle'>
-        <div className=' m-auto h-[calc(100%-16px)] w-[calc(100%-16px)] rounded-lg'>
-          <div className='flex h-full flex-col justify-center align-middle'>
-            <h1 className='fixed left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] text-2xl font-semibold'>
-              Select a playlist to view its contents
-            </h1>
+      <div className='bg-amber-200'>
+        <div className=' rounded-lg bg-blue-500'>
+          <div className='flex  flex-col justify-center  align-middle'>
+            <h1 className='text-2xl font-semibold'>Select a playlist to view its contents</h1>
           </div>
         </div>
       </div>
@@ -54,8 +52,8 @@ function CenterContent() {
   }
 
   return (
-    <div className='flex h-[calc(100%-96px)] w-full justify-center align-middle'>
-      <div className='m-auto h-[calc(100%-16px)] w-[calc(100%-16px)] rounded-lg'>
+    <div className='flex w-full justify-center  align-middle'>
+      <div className='m-auto rounded-lg'>
         {playlist && (
           <>
             <PlaylistHeader playlistData={playlistData} />
