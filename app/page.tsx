@@ -6,10 +6,10 @@ import Center from '@/components/layoutComponents/center/Center'
 
 export default function Page() {
   return (
-    <div className='page-wrapper flex flex-col text-white'>
+    <>
       <Topbar />
       <Center />
       <Bottombar />
-    </div>
+    </>
   )
 }

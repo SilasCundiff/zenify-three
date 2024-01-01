@@ -14,6 +14,9 @@ const Player = () => {
   const [volume, setVolume] = useState(1)
   const prevVolumeRef = useRef(1)
 
+  console.log('playerState', playerState)
+  console.log('player', player)
+
   const handleVolumeChange = (value) => {
     setVolume(value)
   }
@@ -29,14 +32,12 @@ const Player = () => {
 
   // toggle the shuffle state using the spotifyApi
   const toggleShuffle = () => {
-    console.log('toggleShuffle')
     spotifyApi.setShuffle(!playerState.shuffle).catch((err) => {
       console.log(err)
     })
   }
 
   const toggleRepeat = () => {
-    console.log('toggleRepeat')
     if (playerState.repeat_mode === 0) {
       spotifyApi.setRepeat('context').catch((err) => {
         console.log(err)
@@ -59,13 +60,16 @@ const Player = () => {
   const debouncedVolumeChange = useCallback(
     (volume: number) => {
       const debounced = debounce(() => {
+        if (!spotifyApi || !playerState) {
+          return
+        }
         spotifyApi?.setVolume(volume).catch((err) => {
           console.log(err)
         })
       }, 500)
       debounced()
     },
-    [spotifyApi],
+    [spotifyApi, playerState],
   )
 
   useEffect(() => {
@@ -100,7 +104,7 @@ const Player = () => {
   return (
     <div>
       <div className='glass-pane w-fit p-2 text-xs md:px-6 md:text-base'>
-        <ProgressBar />
+        {/* <ProgressBar /> */}
 
         <div className='button-controls flex'>
           <SwitchHorizontalIcon className='button h-10 w-10' onClick={toggleShuffle} />
@@ -135,7 +139,7 @@ const Player = () => {
 
 export default Player
 
-// extrack the progress bar into its own component so the entire player doesn't rerender on progress change
+// extract the progress bar into its own component so the entire player doesn't rerender on progress change
 const ProgressBar = () => {
   const { playerState, player } = useSpotifyWebSDK()
   const [progress, setProgress] = useState(0)
@@ -157,39 +161,37 @@ const ProgressBar = () => {
   const handleProgressChange = (event) => {
     const newProgress = event.target.value
     setProgress(newProgress)
-    player.seek((newProgress * playerState.duration) / 100)
+    // player.seek((newProgress * playerState.duration) / 100)
   }
 
-  useEffect(() => {
-    if (playerState) {
-      setLocalPlayerState({
-        paused: playerState.paused,
-        position: playerState.position,
-        duration: playerState.duration,
-        updateTime: performance.now(),
-      })
-    }
-  }, [playerState])
+  // useEffect(() => {
+  //   if (playerState) {
+  //     setLocalPlayerState({
+  //       paused: playerState.paused,
+  //       position: playerState.position,
+  //       duration: playerState.duration,
+  //       updateTime: performance.now(),
+  //     })
+  //   }
+  // }, [playerState])
+
+  // useEffect(() => {
+  //   if (localPlayerState && !localPlayerState.paused && playerState) {
+  //     const interval = setInterval(() => {
+  //       setLocalPlayerState((prevState) => ({
+  //         ...prevState,
+  //         position: prevState.position + 1000,
+  //         updateTime: performance.now(),
+  //       }))
+  //     }, 1000)
+
+  //     return () => clearInterval(interval)
+  //   }
+  // }, [localPlayerState, playerState])
 
   useEffect(() => {
-    if (localPlayerState && !localPlayerState.paused) {
-      const interval = setInterval(() => {
-        setLocalPlayerState((prevState) => ({
-          ...prevState,
-          position: prevState.position + 1000,
-          updateTime: performance.now(),
-        }))
-      }, 1000)
-
-      return () => clearInterval(interval)
-    }
-  }, [localPlayerState])
-
-  useEffect(() => {
-    if (playerState) {
-      setProgress((getStatePosition() / playerState.duration) * 100)
-    }
-  }, [playerState, localPlayerState, getStatePosition])
+    setProgress((getStatePosition() / localPlayerState.duration) * 100)
+  }, [localPlayerState, getStatePosition])
 
   return (
     <div className='scrubber w-full'>
@@ -198,7 +200,7 @@ const ProgressBar = () => {
         min='0'
         max='100'
         value={progress}
-        onChange={handleProgressChange}
+        // onChange={handleProgressChange}
         className='scrubber-progress h-4 rounded-full bg-white transition-all duration-1000'
       />
     </div>

@@ -14,8 +14,6 @@ export default function PlaybackInfoPane() {
     }
   }, [playerState])
 
-  console.log('playerState', playerState?.track_window.current_track)
-
   if (!songData || songData?.id === null) {
     return (
       <div className='flex max-w-[320px] items-center space-x-4 overflow-hidden'>
