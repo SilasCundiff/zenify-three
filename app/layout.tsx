@@ -1,14 +1,12 @@
 import { Metadata } from 'next'
 import { Noto_Sans_Display, Zen_Kaku_Gothic_New } from 'next/font/google'
 import { getServerSession } from 'next-auth'
-
-import PageWrapper from '@/components/dom/PageWrapper'
 import ParticleCanvas from '@/components/canvas/ParticleCanvas'
 import { authOptions } from '@/helpers/authOptions'
 
 import './global.css'
 import Provider from '@/components/context/client-provider'
-import SimplePlayer from '@/components/layoutComponents/bottombar/SimplePlayer'
+import Main from './page'
 
 const natoSansDisplay = Noto_Sans_Display({
   subsets: ['latin-ext'],
@@ -31,7 +29,7 @@ export default async function RootLayout({ children }) {
       <head />
       <body>
         <Provider session={session}>
-          <PageWrapper>{children}</PageWrapper>
+          <Main />
           <ParticleCanvas />
         </Provider>
       </body>

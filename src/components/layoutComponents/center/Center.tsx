@@ -39,27 +39,178 @@ function CenterContent() {
   //   )
   // }
 
-  if (!playlistData) {
-    return (
-      <div className='bg-amber-200'>
-        <div className=' rounded-lg bg-blue-500'>
-          <div className='flex  flex-col justify-center  align-middle'>
-            <h1 className='text-2xl font-semibold'>Select a playlist to view its contents</h1>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // if (!playlistData) {
+  //   return (
+  //     <div className='flex flex-1 basis-full'>
+  //       <div className='flex-1  bg-blue-500'>
+  //         <div className='flex  flex-col justify-center  align-middle'>
+  //           <h1 className='text-2xl font-semibold'>Select a playlist to view its contents</h1>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
-    <div className='flex w-full justify-center  align-middle'>
-      <div className='m-auto rounded-lg'>
-        {playlist && (
+    <div className='flex flex-1 basis-full  p-4'>
+      <div className='rounded-custom no-scrollbar glass-pane container m-auto h-svh max-h-[calc(100vh-288px)] flex-1 basis-full overflow-y-auto p-4'>
+        <p>
+          Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing
+          layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and
+          publishing industries for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used
+          in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print,
+          and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly
+          used in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic,
+          print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text
+          commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem
+          ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing
+          layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and
+          publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used
+          in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print,
+          and publishing industries for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly
+          used in the graphic, print, and publishing industries for previewing layouts and visual mockups. Lorem ipsum
+          is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print,
+          and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly
+          used in the graphic, print, and publishing industries for previewing layouts and visual mockups. Lorem ipsum
+          is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic,
+          print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text
+          commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem
+          ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing
+          layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and
+          publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used
+          in the graphic, print, and publishing industries for previewing layouts and visual mockups. Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print,
+          and publishing industries for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly
+          used in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic,
+          print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text
+          commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.
+          Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing
+          layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and
+          publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used
+          in the graphic, print, and publishing industries for previewing layouts and visual mockups. Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic,
+          print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text
+          commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.
+          Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing
+          layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing
+          industries for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the
+          graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder
+          text commonly used in the graphic, print, and publishing industries for previewing layouts and visual
+          mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for
+          previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print,
+          and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly
+          used in the graphic, print, and publishing industries for previewing layouts and visual mockups. Lorem ipsum
+          is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print,
+          and publishing industries for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly
+          used in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic,
+          print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text
+          commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem
+          ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing
+          layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing
+          industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the
+          graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder
+          text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.
+          Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing
+          layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing
+          industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the
+          graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder
+          text commonly used in the graphic, print, and publishing industries for previewing layouts and visual
+          mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for
+          previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and
+          publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used
+          in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print,
+          and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly
+          used in the graphic, print, and publishing industries for previewing layouts and visual mockups. Lorem ipsum
+          is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print,
+          and publishing industries for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly
+          used in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print,
+          and publishing industries for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly
+          used in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print,
+          and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly
+          used in the graphic, print, and publishing industries for previewing layouts and visual mockups. Lorem ipsum
+          is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic,
+          print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text
+          commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.
+          Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing
+          layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and
+          publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used
+          in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print,
+          and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly
+          used in the graphic, print, and publishing industries for previewing layouts and visual mockups. Lorem ipsum
+          is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic,
+          print, and publishing industries for previewing layouts and visual mockups. Lorem ipsum is placeholder text
+          commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.
+          Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing
+          layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing
+          industries for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the
+          graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder
+          text commonly used in the graphic, print, and publishing industries for previewing layouts and visual
+          mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for
+          previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and
+          publishing industries for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used
+          in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic,
+          print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text
+          commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem
+          ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing
+          layouts and visual mockups. Lorem ipsum is placeholder text commonly used in the graphic, print, and
+          publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used
+          in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is
+          placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and
+          visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries
+          for previewing layouts and visual mockups.
+        </p>
+        {/* {playlist && (
           <>
             <PlaylistHeader playlistData={playlistData} />
             <PlaylistBody playlistData={playlistData} />
           </>
-        )}
+        )} */}
       </div>
     </div>
   )
