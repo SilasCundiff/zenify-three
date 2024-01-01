@@ -4,21 +4,20 @@ import { signOut } from 'next-auth/react'
 
 function Topbar() {
   return (
-    <div className=' relative grid min-h-16'>
-      {/* <div className='placeholder m-o col-start-1 bg-red-500 p-0'></div> */}
-      <div className='col-start-2 flex px-4'>
+    <div className='relative flex w-full p-2 md:grid md:grid-cols-[240px_1fr_240px] md:p-4'>
+      <div className=' mr-4 flex w-full  md:col-start-2'>
         <input
-          className='rounded-custom mx-auto mb-2 mt-4 w-full max-w-80 bg-slate-50 px-4 py-2 font-semibold text-black'
+          className='rounded-custom w-full bg-slate-50 px-4 py-2 font-semibold text-black md:mx-auto md:max-w-80'
           type='text'
           name='search'
           id='search'
           placeholder='Search for a song'
         />
       </div>
-      <div className='col-start-3 ml-auto'>
+      <div className='ml-2 md:col-start-3 md:ml-auto'>
         <Leva collapsed hidden />
         <button
-          className='rounded-custom mx-4 mb-2 mt-4 w-fit bg-slate-50  px-4 py-2 font-semibold text-black'
+          className='rounded-custom w-fit bg-slate-50  px-4 py-2 font-semibold text-black'
           onClick={() => signOut()}
         >
           Logout

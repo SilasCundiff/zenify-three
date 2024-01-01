@@ -6,7 +6,7 @@ import { authOptions } from '@/helpers/authOptions'
 
 import './global.css'
 import Provider from '@/components/context/client-provider'
-import Main from './page'
+import Page from './page'
 
 const natoSansDisplay = Noto_Sans_Display({
   subsets: ['latin-ext'],
@@ -29,7 +29,7 @@ export default async function RootLayout({ children }) {
       <head />
       <body>
         <Provider session={session}>
-          <Main />
+          <Page />
           <ParticleCanvas />
         </Provider>
       </body>

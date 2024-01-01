@@ -1,8 +1,10 @@
 import Player from './Player'
+import PlaybackInfoPane from './PlaybackInfoPane'
 
 function Bottombar() {
   return (
-    <div className='mt-auto min-h-16 bg-green-600'>
+    <div className='flex flex-col md:grid md:grid-cols-3 md:p-4'>
+      <PlaybackInfoPane />
       <Player />
     </div>
   )

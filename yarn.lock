@@ -1630,6 +1630,18 @@
   resolved "https://registry.npmjs.org/@types/scheduler/-/scheduler-0.16.8.tgz"
   integrity sha512-WZLiwShhwLRmeV6zH+GkbOFT6Z6VklCItrDioxUnv+u4Ll+8vKeFySoFyK/0ctcRpOmwAicELfmys1sDc/Rw+A==
 
+"@types/spotify-api@*":
+  version "0.0.25"
+  resolved "https://registry.npmjs.org/@types/spotify-api/-/spotify-api-0.0.25.tgz"
+  integrity sha512-okhoy0U9fPWtwqCfbDyW8VxamhqvXE0gXIVeMOh5HcvEFQvWW2X0VsvdiX/OyiGQpZbZiOJXIGrbnIPfK0AIpA==
+
+"@types/spotify-web-api-node@^5.0.11":
+  version "5.0.11"
+  resolved "https://registry.npmjs.org/@types/spotify-web-api-node/-/spotify-web-api-node-5.0.11.tgz"
+  integrity sha512-RS3IkSqH9geC61e8qd+Oy7giOTtiY7ywm0Z4bu5uYuc7XuOcLfDwKjmle85IbpTEdazeCgmIbo8nMLg7WDVvgw==
+  dependencies:
+    "@types/spotify-api" "*"
+
 "@types/spotify-web-playback-sdk@^0.1.12", "@types/spotify-web-playback-sdk@^0.1.19":
   version "0.1.19"
   resolved "https://registry.npmjs.org/@types/spotify-web-playback-sdk/-/spotify-web-playback-sdk-0.1.19.tgz"
