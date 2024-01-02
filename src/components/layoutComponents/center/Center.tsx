@@ -6,12 +6,18 @@ import { useSelectedPlaylistStore } from '@/helpers/hooks/usePlaylist'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import PlaylistBody from './PlaylistBody'
 import PlaylistHeader from './PlaylistHeader'
+import Playlist from './Playlist'
 
 function CenterContent() {
-  const { playlist } = useSelectedPlaylistStore()
+  const { setPlaylist, playlist } = useSelectedPlaylistStore()
   const [playlistData, setPlaylistData] = useState(null)
   const spotifyApi = useSpotifyApi()
   const { status } = useSession()
+
+  const handleClearPlaylist = () => {
+    setPlaylist(null)
+    setPlaylistData(null)
+  }
 
   useEffect(() => {
     if (playlist?.id) {
@@ -44,7 +50,7 @@ function CenterContent() {
       <div className='flex flex-1 basis-full p-2 md:p-4'>
         <div className='rounded-custom no-scrollbar glass-pane container m-auto h-svh max-h-[calc(100vh-288px)] flex-1 basis-full overflow-y-auto p-4'>
           <div className='flex flex-col justify-center align-middle'>
-            <h1 className='text-2xl font-semibold'>Select a playlist to view its contents</h1>
+            <Playlist />
           </div>
         </div>
       </div>
@@ -54,12 +60,15 @@ function CenterContent() {
   return (
     <div className='flex flex-1 basis-full p-2 md:p-4'>
       <div className='rounded-custom no-scrollbar glass-pane container m-auto h-svh max-h-[calc(100vh-288px)] flex-1 basis-full overflow-y-auto p-4'>
-        {/* {playlist && (
+        <button className='ml-2' onClick={handleClearPlaylist}>
+          Return to playlist selection
+        </button>
+        {playlist && (
           <>
             <PlaylistHeader playlistData={playlistData} />
             <PlaylistBody playlistData={playlistData} />
           </>
-        )} */}
+        )}
       </div>
     </div>
   )
