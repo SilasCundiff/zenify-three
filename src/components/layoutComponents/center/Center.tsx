@@ -63,21 +63,21 @@ function CenterContent() {
     }
   }, [playlist, spotifyApi, status])
 
-  console.log('playlistData', playerState)
-  if (playerState === null || playerState.loading) {
-    return (
-      <div
-        className={`${
-          uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
-        } flex flex-1  basis-full items-center justify-center p-2 transition-opacity duration-500 md:p-4`}
-      >
-        <div className='rounded-custom no-scrollbar glass-pane container m-auto flex h-svh max-h-[calc(100vh-288px)] flex-1 basis-full items-center justify-center overflow-y-auto p-4'>
-          <LoadingSpinner size='small' />
-          <span className='ml-4'>Fetching your jams 🎧 </span>
-        </div>
-      </div>
-    )
-  }
+  // console.log('playlistData', playerState)
+  // if (playerState.loading) {
+  //   return (
+  //     <div
+  //       className={`${
+  //         uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
+  //       } flex flex-1  basis-full items-center justify-center p-2 transition-opacity duration-500 md:p-4`}
+  //     >
+  //       <div className='rounded-custom no-scrollbar glass-pane container m-auto flex h-svh max-h-[calc(100vh-288px)] flex-1 basis-full items-center justify-center overflow-y-auto p-4'>
+  //         <LoadingSpinner size='small' />
+  //         <span className='ml-4'>Fetching your jams 🎧 </span>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   if (tracksResponseData) {
     return (
