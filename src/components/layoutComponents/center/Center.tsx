@@ -15,7 +15,6 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 function CenterContent() {
   const { setPlaylist, playlist } = useSelectedPlaylistStore()
-  const { player, playerState } = useSpotifyWebSDK()
   const [playlistData, setPlaylistData] = useState(null)
   const spotifyApi = useSpotifyApi()
   const { status } = useSession()
