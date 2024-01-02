@@ -133,7 +133,7 @@ const Player = () => {
             </button>
           )}
         </div>
-        <div className='col-start-2 flex items-center justify-center space-x-4 md:space-x-8 '>
+        <div className='col-start-2 flex items-center justify-center space-x-4  md:space-x-8 md:px-2'>
           <FontAwesomeIcon icon={faShuffle} className='button h-4 w-4 md:h-5 md:w-5' onClick={toggleShuffle} />
           <div className='flex items-center  justify-center space-x-2 md:space-x-4'>
             <FontAwesomeIcon

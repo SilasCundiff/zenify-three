@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 export default function PlaybackInfoPane() {
-  const { player, playerState } = useSpotifyWebSDK()
+  const { playerState } = useSpotifyWebSDK()
   const [songData, setSongData] = useState(null)
   const { uiHidden } = useUI()
 
@@ -41,9 +41,9 @@ export default function PlaybackInfoPane() {
             height={64}
             width={64}
           />
-          <div>
-            <h3 className='text-md font-bold text-gray-50 md:text-xl'>{songData?.name}</h3>
-            <p className='text-md text-gray-50 md:text-xl'>{songData?.artists?.[0]?.name}</p>
+          <div className='overflow-hidden text-nowrap'>
+            <h3 className='text-md truncate font-bold text-gray-50 md:text-xl'>{songData?.name}</h3>
+            <p className='text-md truncate text-gray-50 md:text-xl'>{songData?.artists?.[0]?.name}</p>
             <p className='md:text-md text-sm text-gray-300 md:inline'>{songData?.album?.name}</p>
           </div>
         </>

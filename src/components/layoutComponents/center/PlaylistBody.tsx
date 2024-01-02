@@ -1,11 +1,10 @@
 'use client'
-
-import { useSelectedSongStore } from '@/helpers/hooks'
 import PlaylistTrackItem from './PlaylistTrackItem'
 import spotifyApi from '@/helpers/spotify'
 
 const PlaylistBody = ({ playlistData }) => {
   const { tracks, uri } = playlistData
+  console.log('playlistData', playlistData)
 
   const handleSelectTrack = (track, offset) => {
     playSelectedSong({ ...track, offset, context: { type: 'playlist', uri } })
@@ -15,9 +14,6 @@ const PlaylistBody = ({ playlistData }) => {
       .play({
         context_uri: selectedSong?.context.uri,
         offset: { position: selectedSong?.offset },
-      })
-      .then((res) => {
-        console.log(res)
       })
       .catch((err) => {
         console.log(err)

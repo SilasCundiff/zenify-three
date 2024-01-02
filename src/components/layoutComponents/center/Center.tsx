@@ -7,17 +7,42 @@ import PlaylistBody from './PlaylistBody'
 import PlaylistHeader from './PlaylistHeader'
 import Playlists from './Playlists'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLeftLong } from '@fortawesome/free-solid-svg-icons'
+import { faLeftLong, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { useSearchTracksStore } from '@/helpers/hooks/useSearch'
+import PlaylistTrackItem from './PlaylistTrackItem'
 
 function CenterContent() {
   const { setPlaylist, playlist } = useSelectedPlaylistStore()
   const [playlistData, setPlaylistData] = useState(null)
   const spotifyApi = useSpotifyApi()
   const { status } = useSession()
+  const { tracksResponseData, setResetTracksResponseData } = useSearchTracksStore()
 
   const handleClearPlaylist = () => {
     setPlaylist(null)
     setPlaylistData(null)
+  }
+
+  const handleClearSearchResults = () => {
+    handleClearPlaylist()
+    setResetTracksResponseData()
+  }
+
+  const handleSelectTrack = (track) => {
+    const { uri } = track.album
+    playSelectedSong({ ...track, offset: track.track_number, context: { type: 'album', uri } })
+  }
+
+  const playSelectedSong = async (selectedSong) => {
+    spotifyApi
+      .play({
+        context_uri: selectedSong?.context.uri,
+        offset: { position: selectedSong?.offset },
+      })
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.log(err)
+      })
   }
 
   useEffect(() => {
@@ -34,17 +59,29 @@ function CenterContent() {
     }
   }, [playlist, spotifyApi, status])
 
-  // if (status !== 'authenticated') {
-  //   return (
-  //     <div className='flex  w-full justify-center bg-amber-200 align-middle'>
-  //       <div className=' m-auto   rounded-lg'>
-  //         <div className='flex h-full flex-col justify-center align-middle'>
-  //           <LoadingSpinner size='large' />
-  //         </div>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+  if (tracksResponseData) {
+    return (
+      <div className='flex flex-1 basis-full p-2 md:p-4'>
+        <div className='rounded-custom no-scrollbar glass-pane container m-auto flex h-svh max-h-[calc(100vh-288px)] flex-1 basis-full flex-col overflow-y-auto p-4'>
+          <button className='ml-0 mr-2 self-start hover:text-gray-300' onClick={handleClearSearchResults}>
+            <span className='ml-2 mr-1'>
+              <FontAwesomeIcon icon={faXmark} />
+            </span>{' '}
+            Clear search results
+          </button>
+          <div className='flex max-h-[840px] flex-col justify-center overflow-y-auto align-middle'>
+            {tracksResponseData?.items.map((item, index) => {
+              return (
+                <div key={item.id} onClick={() => handleSelectTrack(item)}>
+                  <PlaylistTrackItem track={item} order={index} />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!playlistData) {
     return (
@@ -61,7 +98,7 @@ function CenterContent() {
   return (
     <div className='flex flex-1 basis-full p-2 md:p-4'>
       <div className='rounded-custom no-scrollbar glass-pane container m-auto flex h-svh max-h-[calc(100vh-288px)] flex-1 basis-full flex-col overflow-y-auto p-4'>
-        <button className=' mr-2 hover:text-gray-300 md:ml-auto' onClick={handleClearPlaylist}>
+        <button className='mr-2 self-start hover:text-gray-300' onClick={handleClearPlaylist}>
           <span className='mr-1'>
             <FontAwesomeIcon icon={faLeftLong} />
           </span>{' '}

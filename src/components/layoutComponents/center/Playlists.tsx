@@ -22,8 +22,6 @@ function Playlists() {
     }
   }, [session, spotifyApi])
 
-  console.log(playlists)
-
   return (
     <div>
       <h2 className='mb-2 ml-2 text-2xl'>Your Playlists</h2>
