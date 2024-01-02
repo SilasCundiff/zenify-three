@@ -235,7 +235,7 @@ export default class SpotifySync {
   async getTrackInfo({ item, progress_ms }) {
     // check token {}
     const token = this.state.spotifyApi.getAccessToken()
-    if (!token) {
+    if (!token || !item) {
       return this.ping()
     }
 

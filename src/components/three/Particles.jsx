@@ -19,9 +19,9 @@ const ParticleMaterial = shaderMaterial(
     offsetSize: 2,
     size: 2.5,
     frequency: 2,
-    amplitude: 1,
-    offsetGain: 0,
-    maxDistance: 1.8,
+    amplitude: 1.4,
+    offsetGain: 0.5,
+    maxDistance: 1.6,
     startColor: new THREE.Color('hsl(0, 100%, 50%)'), // red
     endColor: new THREE.Color('hsl(240, 100%, 50%)'), // blue
   },
@@ -117,12 +117,12 @@ export default function Particles() {
       offsetSize: { value: 2, min: 0, max: 10, step: 0.1 },
       // size: { value: 4.5, min: 0, max: 10, step: 0.1 },
       // frequency: { value: 2, min: 0, max: 10, step: 0.1 },
-      amplitude: { value: 1.1, min: 0, max: 10, step: 0.1 },
-      offsetGain: { value: 0.0, min: 0, max: 10, step: 0.1 },
-      maxDistance: { value: 2, min: 0, max: 10, step: 0.1 },
+      amplitude: { value: 1.4, min: 0, max: 10, step: 0.1 },
+      offsetGain: { value: 0.6, min: 0, max: 10, step: 0.1 },
+      maxDistance: { value: 1.6, min: 0, max: 10, step: 0.1 },
       // startColor: new THREE.Color('hsl(0, 100%, 50%)'), // red
       // endColor: new THREE.Color('hsl(240, 100%, 50%)'), // blue
-      count: { value: 200, min: 0, max: 500, step: 10 },
+      count: { value: 300, min: 0, max: 500, step: 10 },
       geometryShape: {
         options: ['TorusGeometry', 'BoxGeometry', 'SphereGeometry', 'CylinderGeometry'],
       },
@@ -178,7 +178,7 @@ export default function Particles() {
   return (
     <>
       <Center>
-        <OrbitControls makeDefault />
+        <OrbitControls />
         <points ref={pointsRef}>
           {
             // return the selected geometry
