@@ -19,10 +19,11 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ProgressBar from './ProgressBar'
+import { useUI } from '@/helpers/hooks/useUI'
 
 const Player = () => {
   const { player, playerState } = useSpotifyWebSDK()
-  const [uiHidden, setUiHidden] = useState(false)
+  const { uiHidden, setUiHidden } = useUI()
   const spotifyApi = useSpotifyApi()
   const [volume, setVolume] = useState(1)
   const prevVolumeRef = useRef(1)
@@ -104,7 +105,11 @@ const Player = () => {
   }
 
   return (
-    <div className='glass-pane md:rounded-custom mx-auto h-24 w-full max-w-lg rounded-none p-2 text-xs md:text-base '>
+    <div
+      className={`${
+        uiHidden ? 'opacity-10' : 'opacity-100'
+      } glass-pane md:rounded-custom mx-auto h-24 w-full max-w-lg rounded-none p-2 text-xs transition-opacity duration-500 hover:opacity-100 md:text-base`}
+    >
       {playerState && !playerState.loading && <ProgressBar playerState={playerState} player={player} />}
       <div className='button-controls grid grid-cols-[88px_1fr_88px] bg-transparent py-2 md:grid-cols-[96px_1fr_96px]'>
         <div className='col-start-1 flex items-center '>

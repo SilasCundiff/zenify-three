@@ -1,7 +1,15 @@
+'use client'
 import { useSelectedPlaylistStore } from '@/helpers/hooks'
+import Image from 'next/image'
+import { useEffect, useState } from 'react'
 
-const ListItem = ({ playlistId, playlistTitle }) => {
+const ListItem = ({ playlistId, playlistTitle, playlistImageUrl }) => {
   const { setPlaylist, playlist } = useSelectedPlaylistStore()
+  const [imgSrc, setImgSrc] = useState(playlistImageUrl)
+
+  useEffect(() => {
+    setImgSrc(playlistImageUrl)
+  }, [playlistImageUrl])
 
   const handleSelectPlaylist = () => {
     if (playlistId === playlist?.id) return
@@ -10,10 +18,28 @@ const ListItem = ({ playlistId, playlistTitle }) => {
 
   return (
     <li
-      className='w-full cursor-pointer whitespace-nowrap px-2 py-1.5 align-middle text-xl font-bold hover:text-green-300'
+      className='rounded-custom flex min-w-16 max-w-16 cursor-pointer flex-col whitespace-nowrap rounded-b-none align-middle text-sm font-bold hover:text-gray-300 md:min-w-48 md:max-w-48 md:text-lg'
       onClick={handleSelectPlaylist}
     >
-      {playlistTitle}
+      {playlistImageUrl ? (
+        <Image
+          src={imgSrc ? imgSrc : '/img/album-placeholder-64.png'}
+          className='rounded-custom aspect-square w-full'
+          alt='playlist cover'
+          height={300}
+          width={300}
+          placeholder='blur'
+          blurDataURL={'/img/album-placeholder-64.png'}
+          onError={() => {
+            setImgSrc('/img/album-placeholder-64.png')
+          }}
+        />
+      ) : (
+        <div className='h-16 w-16 rounded-full bg-gray-700' />
+      )}
+      <div className='max-w-[48ch]'>
+        <p className='truncate pt-1'>{playlistTitle}</p>
+      </div>
     </li>
   )
 }

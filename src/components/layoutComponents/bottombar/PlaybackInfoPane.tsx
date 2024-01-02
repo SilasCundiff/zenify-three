@@ -1,12 +1,14 @@
 'use client'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useSpotifyWebSDK } from '@/helpers/hooks'
+import { useUI } from '@/helpers/hooks/useUI'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 export default function PlaybackInfoPane() {
   const { player, playerState } = useSpotifyWebSDK()
   const [songData, setSongData] = useState(null)
+  const { uiHidden } = useUI()
 
   useEffect(() => {
     if (playerState?.track_window.current_track) {
@@ -25,7 +27,11 @@ export default function PlaybackInfoPane() {
   }
 
   return (
-    <div className='glass-pane rounded-custom m-2 flex h-24 items-center space-x-2 overflow-hidden pr-4 md:m-0 md:max-w-fit md:space-x-4 '>
+    <div
+      className={`${
+        uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
+      } glass-pane rounded-custom m-2 flex h-24 items-center space-x-2 overflow-hidden pr-4 transition-opacity duration-500 md:m-0 md:max-w-fit md:space-x-4`}
+    >
       {songData && (
         <>
           <Image

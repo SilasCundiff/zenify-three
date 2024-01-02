@@ -1,5 +1,5 @@
 import NavMenu from './NavMenu'
-import Playlist from '../center/Playlist'
+import Playlist from '../center/Playlists'
 
 function LeftSidebar() {
   return (
