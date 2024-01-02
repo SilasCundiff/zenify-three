@@ -20,7 +20,7 @@ export default function PlaybackInfoPane() {
     return (
       <div className='glass-pane rounded-custom m-2 flex h-24 min-w-60 items-center justify-center space-x-2 overflow-hidden pr-4 md:m-0 md:max-w-fit md:space-x-4'>
         <div className='p-4'>
-          <LoadingSpinner size='large' />
+          <LoadingSpinner size='small' />
         </div>
       </div>
     )

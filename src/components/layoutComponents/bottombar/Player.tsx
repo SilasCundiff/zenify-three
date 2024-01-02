@@ -20,6 +20,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ProgressBar from './ProgressBar'
 import { useUI } from '@/helpers/hooks/useUI'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 const Player = () => {
   const { player, playerState } = useSpotifyWebSDK()
@@ -99,7 +100,10 @@ const Player = () => {
   if (!playerState || playerState.loading) {
     return (
       <div className='glass-pane md:rounded-custom mx-auto flex h-24 min-h-24 w-full max-w-lg shrink-0 rounded-none p-2 text-xs md:text-base'>
-        <p className='m-auto'>Fetching your jams 🎧</p>
+        <p className='m-auto flex'>
+          <LoadingSpinner size='small' />
+          <span className='ml-4'>Connecting your player 📻</span>
+        </p>
       </div>
     )
   }

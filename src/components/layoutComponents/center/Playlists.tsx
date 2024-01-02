@@ -30,14 +30,12 @@ function Playlists() {
           {playlists &&
             playlists.map((playlist) => {
               return (
-                <>
-                  <ListItem
-                    key={playlist.id}
-                    playlistId={playlist.id}
-                    playlistTitle={playlist.name}
-                    playlistImageUrl={playlist?.images[0].url}
-                  />
-                </>
+                <ListItem
+                  key={playlist.id}
+                  playlistId={playlist.id}
+                  playlistTitle={playlist.name}
+                  playlistImageUrl={playlist?.images[0].url}
+                />
               )
             })}
         </ul>
