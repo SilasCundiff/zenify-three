@@ -124,6 +124,10 @@ export const useSpotifyWebSDK = () => {
       volume: 0.01,
     })
 
+    player.addListener('initialization_error', ({ message }) => {
+      console.error(message)
+    })
+
     player.addListener('ready', async ({ device_id }) => {
       const devices = await spotifyApi.getMyDevices()
 
@@ -134,14 +138,18 @@ export const useSpotifyWebSDK = () => {
       if (!webPlayer) {
         return
       }
-      spotifyApi.transferMyPlayback([webPlayer.id])
-      spotifyApi.setVolume(1, { device_id: webPlayer.id })
+      spotifyApi.transferMyPlayback([webPlayer.id]).catch((err) => {
+        console.error(err)
+      })
+      spotifyApi.setVolume(1, { device_id: webPlayer.id }).catch((err) => {
+        console.error(err)
+      })
     })
 
     // TODO: possibly use this to update UI
-    // player.addListener('not_ready', ({ device_id }) => {
-    //   console.log('Device ID has gone offline')
-    // })
+    player.addListener('not_ready', ({ device_id }) => {
+      console.log('Device ID has gone offline')
+    })
 
     player.addListener('player_state_changed', (state) => {
       if (!state) {
@@ -157,7 +165,7 @@ export const useSpotifyWebSDK = () => {
     player.connect()
 
     return () => {
-      if (player) player.disconnect()
+      player.disconnect()
     }
   }, [token, isReady, spotifyApi, setPlayer, setPlayerState])
 

@@ -5,9 +5,9 @@ import { signOut } from 'next-auth/react'
 function Topbar() {
   return (
     <div className='relative flex w-full p-2 md:grid md:grid-cols-[240px_1fr_240px] md:p-4'>
-      <div className=' mr-4 flex w-full  md:col-start-2'>
+      <div className=' mr-4 flex w-full  md:col-start-2 '>
         <input
-          className='rounded-custom w-full bg-slate-50 px-4 py-2 font-semibold text-black md:mx-auto md:max-w-80'
+          className='rounded-custom w-full bg-slate-50 px-4 py-2 font-semibold text-black md:mx-auto md:max-w-lg'
           type='text'
           name='search'
           id='search'

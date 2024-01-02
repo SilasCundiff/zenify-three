@@ -3,7 +3,7 @@ import PlaybackInfoPane from './PlaybackInfoPane'
 
 function Bottombar() {
   return (
-    <div className='flex flex-col md:grid md:grid-cols-3 md:p-4'>
+    <div className='flex flex-col bg-transparent md:grid md:grid-cols-3 md:p-4'>
       <PlaybackInfoPane />
       <Player />
     </div>

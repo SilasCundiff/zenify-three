@@ -1,21 +1,31 @@
-/* eslint-disable tailwindcss/no-custom-classname */
 'use client'
-import { RefreshIcon, SwitchHorizontalIcon, VolumeUpIcon as VolumeDownIcon } from '@heroicons/react/outline'
 import { debounce } from 'lodash'
 import { useSpotifyApi, useSpotifyWebSDK } from '@/helpers/hooks'
-import NowPlayingInfo from './PlaybackInfoPane'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faVolumeHigh,
+  faVolumeLow,
+  faVolumeXmark,
+  faShuffle,
+  faPlay,
+  faPause,
+  faRepeat,
+  faBackwardStep,
+  faForwardStep,
+  faEye,
+  faEyeSlash,
+} from '@fortawesome/free-solid-svg-icons'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { RewindIcon, FastForwardIcon, PauseIcon, PlayIcon } from '@heroicons/react/solid'
+
+import ProgressBar from './ProgressBar'
 
 const Player = () => {
   const { player, playerState } = useSpotifyWebSDK()
+  const [uiHidden, setUiHidden] = useState(false)
   const spotifyApi = useSpotifyApi()
   const [volume, setVolume] = useState(1)
   const prevVolumeRef = useRef(1)
-
-  console.log('playerState', playerState)
-  console.log('player', player)
 
   const handleVolumeChange = (value) => {
     setVolume(value)
@@ -30,7 +40,14 @@ const Player = () => {
     }
   }
 
-  // toggle the shuffle state using the spotifyApi
+  const handlePreviousTrack = () => {
+    player.previousTrack()
+  }
+
+  const handleSeekBackward = () => {
+    player.seek(0)
+  }
+
   const toggleShuffle = () => {
     spotifyApi.setShuffle(!playerState.shuffle).catch((err) => {
       console.log(err)
@@ -78,59 +95,87 @@ const Player = () => {
     }
   }, [volume, debouncedVolumeChange])
 
-  if (!player) {
+  if (!playerState || playerState.loading) {
     return (
-      <div className='flex w-full shrink-0 px-2 text-xs md:px-6 md:text-base'>
-        <p className='m-auto'>
-          Player not active, please open Spotify and select <span className='text-green-400'>Zenify</span> as your
-          active device.
-        </p>
-      </div>
-    )
-  }
-
-  // console.log('playerState', playerState, player)
-  // console.log('nowPlaying', nowPlaying)
-  // console.log('selectedSong', selectedSong)
-
-  if (!playerState) {
-    return (
-      <div className='flex h-24 min-h-24 w-full shrink-0 px-2 text-xs md:px-6 md:text-base '>
+      <div className='glass-pane md:rounded-custom mx-auto flex h-24 min-h-24 w-full max-w-lg shrink-0 rounded-none p-2 text-xs md:text-base'>
         <p className='m-auto'>Fetching your jams 🎧</p>
       </div>
     )
   }
 
   return (
-    <div>
-      <div className='glass-pane w-fit p-2 text-xs md:px-6 md:text-base'>
-        {/* <ProgressBar /> */}
-
-        <div className='button-controls flex'>
-          <SwitchHorizontalIcon className='button h-10 w-10' onClick={toggleShuffle} />
-          <div className='flex w-full items-center justify-center text-4xl '>
-            <div className='ml-8 mr-[64px] flex items-center  justify-center space-x-4'>
-              <RewindIcon className='button h-10 w-10' onClick={() => player.previousTrack()} />
-              {playerState && !playerState.paused ? (
-                <PauseIcon className='button h-12 w-12' onClick={() => player.pause()} />
-              ) : (
-                <PlayIcon className='button h-12 w-12' onClick={() => player.resume()} />
-              )}
-              <FastForwardIcon className='button h-10 w-10' onClick={() => player.nextTrack()} />
-            </div>
-          </div>
-          <RefreshIcon className='button h-10 w-10' onClick={toggleRepeat} />
-          <div className=' flex items-center justify-end space-x-2 md:space-x-4'>
-            <VolumeDownIcon className='button' onClick={handleMuteVolume} />
-            <input
-              className='volume-slider w-12 md:w-28 '
-              type='range'
-              value={volume}
-              min={0}
-              max={100}
-              onChange={(e) => handleVolumeChange(Number(e.target.value))}
+    <div className='glass-pane md:rounded-custom mx-auto h-24 w-full max-w-lg rounded-none p-2 text-xs md:text-base '>
+      {playerState && !playerState.loading && <ProgressBar playerState={playerState} player={player} />}
+      <div className='button-controls grid grid-cols-[88px_1fr_88px] bg-transparent py-2 md:grid-cols-[96px_1fr_96px]'>
+        <div className='col-start-1 flex items-center '>
+          {uiHidden ? (
+            <button
+              className='button h-4 w-4 md:h-8 md:w-8'
+              onClick={() => {
+                setUiHidden(false)
+              }}
+            >
+              <FontAwesomeIcon icon={faEyeSlash} />
+            </button>
+          ) : (
+            <button
+              className='button h-4 w-4 md:h-8 md:w-8'
+              onClick={() => {
+                setUiHidden(true)
+              }}
+            >
+              <FontAwesomeIcon icon={faEye} />
+            </button>
+          )}
+        </div>
+        <div className='col-start-2 flex items-center justify-center space-x-4 md:space-x-8 '>
+          <FontAwesomeIcon icon={faShuffle} className='button h-4 w-4 md:h-5 md:w-5' onClick={toggleShuffle} />
+          <div className='flex items-center  justify-center space-x-2 md:space-x-4'>
+            <FontAwesomeIcon
+              icon={faBackwardStep}
+              className='button h-6 w-6 md:h-7 md:w-7'
+              onClick={handleSeekBackward}
+              onDoubleClick={handlePreviousTrack}
+            />
+            {playerState && !playerState.paused ? (
+              <FontAwesomeIcon
+                icon={faPause}
+                className='button h-8 w-8 md:h-10 md:w-10'
+                onClick={() => player.pause()}
+              />
+            ) : (
+              <FontAwesomeIcon
+                icon={faPlay}
+                className='button h-8 w-8 md:h-10 md:w-10'
+                onClick={() => player.resume()}
+              />
+            )}
+            <FontAwesomeIcon
+              icon={faForwardStep}
+              className='button h-6 w-6 md:h-7 md:w-7'
+              onClick={() => player.nextTrack()}
             />
           </div>
+          <FontAwesomeIcon icon={faRepeat} className='button h-4 w-4 md:h-5 md:w-5' onClick={toggleRepeat} />
+        </div>
+        <div className=' mr-1 flex items-center justify-end space-x-2'>
+          {volume > 50 && <FontAwesomeIcon icon={faVolumeHigh} className='button h-4 w-4' onClick={handleMuteVolume} />}
+          {volume > 0 && volume <= 50 && (
+            <FontAwesomeIcon icon={faVolumeLow} className='button h-4 w-4 md:h-4 md:w-4' onClick={handleMuteVolume} />
+          )}
+          {volume === 0 && (
+            <FontAwesomeIcon icon={faVolumeXmark} className='button h-4 w-4 md:h-4 md:w-4' onClick={handleMuteVolume} />
+          )}
+
+          <input
+            className='volume-slider '
+            type='range'
+            value={volume}
+            min={0}
+            max={100}
+            step={1}
+            onChange={(e) => handleVolumeChange(Number(e.target.value))}
+          />
         </div>
       </div>
     </div>
@@ -138,71 +183,3 @@ const Player = () => {
 }
 
 export default Player
-
-// extract the progress bar into its own component so the entire player doesn't rerender on progress change
-const ProgressBar = () => {
-  const { playerState, player } = useSpotifyWebSDK()
-  const [progress, setProgress] = useState(0)
-  const [localPlayerState, setLocalPlayerState] = useState({
-    paused: true,
-    position: 0,
-    duration: 0,
-    updateTime: null,
-  })
-
-  const getStatePosition = useCallback(() => {
-    if (localPlayerState.paused) {
-      return localPlayerState.position ? localPlayerState.position : 0
-    }
-    const position = localPlayerState.position + (performance.now() - localPlayerState.updateTime)
-    return Math.floor(position > localPlayerState.duration ? localPlayerState.duration : position)
-  }, [localPlayerState])
-
-  const handleProgressChange = (event) => {
-    const newProgress = event.target.value
-    setProgress(newProgress)
-    // player.seek((newProgress * playerState.duration) / 100)
-  }
-
-  // useEffect(() => {
-  //   if (playerState) {
-  //     setLocalPlayerState({
-  //       paused: playerState.paused,
-  //       position: playerState.position,
-  //       duration: playerState.duration,
-  //       updateTime: performance.now(),
-  //     })
-  //   }
-  // }, [playerState])
-
-  // useEffect(() => {
-  //   if (localPlayerState && !localPlayerState.paused && playerState) {
-  //     const interval = setInterval(() => {
-  //       setLocalPlayerState((prevState) => ({
-  //         ...prevState,
-  //         position: prevState.position + 1000,
-  //         updateTime: performance.now(),
-  //       }))
-  //     }, 1000)
-
-  //     return () => clearInterval(interval)
-  //   }
-  // }, [localPlayerState, playerState])
-
-  useEffect(() => {
-    setProgress((getStatePosition() / localPlayerState.duration) * 100)
-  }, [localPlayerState, getStatePosition])
-
-  return (
-    <div className='scrubber w-full'>
-      <input
-        type='range'
-        min='0'
-        max='100'
-        value={progress}
-        // onChange={handleProgressChange}
-        className='scrubber-progress h-4 rounded-full bg-white transition-all duration-1000'
-      />
-    </div>
-  )
-}
