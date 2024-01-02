@@ -1,4 +1,6 @@
 'use client'
+import { faSignOut } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Leva } from 'leva'
 import { signOut } from 'next-auth/react'
 
@@ -17,10 +19,11 @@ function Topbar() {
       <div className='ml-2 md:col-start-3 md:ml-auto'>
         <Leva collapsed hidden />
         <button
-          className='rounded-custom w-fit bg-slate-50  px-4 py-2 font-semibold text-black'
+          className='rounded-custom flex min-h-10 w-fit min-w-10 items-center bg-slate-50 p-2 font-semibold text-black md:px-4'
           onClick={() => signOut()}
         >
-          Logout
+          <span className='hidden md:inline'>Logout</span>
+          <FontAwesomeIcon icon={faSignOut} className=' m-auto md:ml-2 md:mt-1' />
         </button>
       </div>
     </div>

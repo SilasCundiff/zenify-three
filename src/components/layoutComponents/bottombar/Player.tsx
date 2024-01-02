@@ -115,7 +115,7 @@ const Player = () => {
         <div className='col-start-1 flex items-center '>
           {uiHidden ? (
             <button
-              className='button h-4 w-4 md:h-8 md:w-8'
+              className='button h-8 w-8 md:h-8 md:w-8'
               onClick={() => {
                 setUiHidden(false)
               }}
@@ -124,7 +124,7 @@ const Player = () => {
             </button>
           ) : (
             <button
-              className='button h-4 w-4 md:h-8 md:w-8'
+              className='button h-8 w-8 md:h-8 md:w-8'
               onClick={() => {
                 setUiHidden(true)
               }}
