@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import { FaHome, FaSearch } from 'react-icons/fa'
-import { HiLibrary } from 'react-icons/hi'
 
 function Nav() {
   return (
@@ -8,9 +6,7 @@ function Nav() {
       <ul className='w-full p-3 font-semibold'>
         <li className=' flex w-full cursor-pointer py-2 text-2xl hover:text-green-200'>
           <Link className='flex  align-middle' href={'/welcome'}>
-            <span className=' my-auto flex min-h-full justify-center px-2 pt-0.5 align-middle'>
-              <FaHome />
-            </span>{' '}
+            <span className=' my-auto flex min-h-full justify-center px-2 pt-0.5 align-middle'></span>{' '}
             <span className=''>Home</span>
           </Link>
         </li>
