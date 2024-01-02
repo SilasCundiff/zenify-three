@@ -4,13 +4,12 @@ import { useSearchTracksStore } from '@/helpers/hooks/useSearch'
 
 export default function SearchInput() {
   const [search, setSearch] = useState('')
-  const spotifyApi = useSpotifyApi()
   const { tracksResponseData, setTracksResponseData } = useSearchTracksStore()
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    setTracksResponseData(search, 1)
+    setTracksResponseData(search)
   }
 
   useEffect(() => {

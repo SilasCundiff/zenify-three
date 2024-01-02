@@ -34,7 +34,7 @@ const PlaylistTrackItem = ({ track, order }) => {
         </div>
       </div>
       <div className='ml-auto flex items-center justify-between md:ml-0'>
-        <p className='hidden w-40 md:inline'>{album.name}</p>
+        <p className='hidden w-40 max-w-40 truncate text-nowrap md:inline md:w-full md:max-w-80'>{album.name}</p>
         <p className=' '>{convertMsToMinutes(duration_ms)}</p>
       </div>
     </div>

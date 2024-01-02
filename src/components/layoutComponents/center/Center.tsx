@@ -30,7 +30,8 @@ function CenterContent() {
 
   const handleSelectTrack = (track) => {
     const { uri } = track.album
-    playSelectedSong({ ...track, offset: track.track_number, context: { type: 'album', uri } })
+    console.log('track', track.track_number)
+    playSelectedSong({ ...track, offset: track.track_number - 1, context: { type: 'album', uri } })
   }
 
   const playSelectedSong = async (selectedSong) => {
@@ -69,7 +70,7 @@ function CenterContent() {
             </span>{' '}
             Clear search results
           </button>
-          <div className='flex max-h-[840px] flex-col justify-center overflow-y-auto align-middle'>
+          <div className='mt-4 flex flex-1 flex-col overflow-y-auto  '>
             {tracksResponseData?.items.map((item, index) => {
               return (
                 <div key={item.id} onClick={() => handleSelectTrack(item)}>
