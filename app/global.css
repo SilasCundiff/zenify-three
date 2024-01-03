@@ -24,7 +24,10 @@ body,
   }
 
   .page-wrapper {
-    min-height: 100svh;
+    height: 100vh; /* old browsers */
+    height: 100dvh; /* new browsers */
+    position: fixed;
+    inset: 0;
   }
 
   .glass-pane {
