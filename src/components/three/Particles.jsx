@@ -22,8 +22,8 @@ const ParticleMaterial = shaderMaterial(
     amplitude: 1.4,
     offsetGain: 0.5,
     maxDistance: 1.6,
-    startColor: new THREE.Color('hsl(0, 100%, 50%)'), // red
-    endColor: new THREE.Color('hsl(240, 100%, 50%)'), // blue
+    startColor: new THREE.Color('hsl(320, 100%, 85%)'), // red
+    endColor: new THREE.Color('hsl(240, 100%, 80%)'), // blue
   },
   vertex,
   fragment,
@@ -67,18 +67,22 @@ export default function Particles() {
         (spotifySync.current?.getInterval('segment').loudness_max - minLoudness) / (maxLoudness - minLoudness) // normalize to 0-1
       const reversedFrequency = 1 - normalizedLoudness // reverse so that 0 becomes 1 and 1 becomes 0
       const defaultSize = 2.5
-      const newSize = (defaultSize / reversedFrequency) * 0.05
+      const newSize = (defaultSize / reversedFrequency) * 0.025
       const clampedSize = Math.min(Math.max(newSize, 1.5), 5)
-
-      // pointsRef.current.material.uniforms.size.value = clampedSize
+      // console.log(spotifySync.current?.getInterval('segment'))
+      const loudness = Math.abs(spotifySync.current?.getInterval('segment').loudness_max) * 4
+      const reversedLoudness = 100 - Math.abs(spotifySync.current?.getInterval('segment').loudness_max) * 4
+      const lightness = THREE.MathUtils.clamp(loudness, 50, 100)
+      // pointsRef.current.material.uniforms.size.value = THREE.MathUtils.clamp(reversedLoudness * 0.05, 1.5, 5)
 
       const minTimbre = 0
       const maxTimbre = 1
 
-      const normalizedTimbre = (timbreAvg - minTimbre) / (maxTimbre - minTimbre)
-      const hue = normalizedTimbre * 360
-      const startColor = new THREE.Color('hsl(' + hue + 20 + ', 100%, 50%)')
-      const endColor = new THREE.Color('hsl(' + (hue + 60) + ', 100%, 50%)')
+      const normalizedTimbre = Math.abs((timbreAvg - minTimbre) / (maxTimbre - minTimbre))
+      const hue = normalizedTimbre * 36
+
+      const startColor = new THREE.Color('hsl(' + hue + `, 100%, ${lightness}%})`)
+      const endColor = new THREE.Color('hsl(' + hue + `, 100%, ${lightness}%)`)
 
       // Animate the start color
       gsap.to(pointsRef.current.material.uniforms.startColor.value, {
@@ -103,8 +107,8 @@ export default function Particles() {
       })
     } else {
       pointsRef.current.material.uniforms.time.value += delta
-      const startColor = new THREE.Color('hsl(0, 100%, 50%)')
-      const endColor = new THREE.Color('hsl(240, 100%, 50%)')
+      const startColor = new THREE.Color('hsl(320, 100%, 85%)')
+      const endColor = new THREE.Color('hsl(240, 100%, 80%)')
       pointsRef.current.material.uniforms.startColor.value = startColor
       pointsRef.current.material.uniforms.endColor.value = endColor
       pointsRef.current.material.uniforms.size.value = 2.5
@@ -120,8 +124,8 @@ export default function Particles() {
       amplitude: { value: 1.4, min: 0, max: 10, step: 0.1 },
       offsetGain: { value: 0.6, min: 0, max: 10, step: 0.1 },
       maxDistance: { value: 1.6, min: 0, max: 10, step: 0.1 },
-      // startColor: new THREE.Color('hsl(0, 100%, 50%)'), // red
-      // endColor: new THREE.Color('hsl(240, 100%, 50%)'), // blue
+      // startColor: new THREE.Color('hsl(320, 100%, 85%)'), // red
+      // endColor: new THREE.Color('hsl(240, 100%, 80%)'), // blue
       count: { value: 300, min: 0, max: 500, step: 10 },
       geometryShape: {
         options: ['TorusGeometry', 'BoxGeometry', 'SphereGeometry', 'CylinderGeometry'],
@@ -155,7 +159,7 @@ export default function Particles() {
           gsap.to(pointsRef.current.rotation, {
             duration: beat.duration, // Either a longer or BPM-synced duration
             // y: Math.random() * Math.PI * 2,
-            z: Math.random() * Math.PI * pitchAvg * 10,
+            z: Math.random() * Math.PI * pitchAvg * 20,
             ease: 'elastic.out(0.2)',
           })
         }
@@ -163,11 +167,15 @@ export default function Particles() {
           gsap.to(pointsRef.current.rotation, {
             duration: beat.duration, // Either a longer or BPM-synced duration
             // y: Math.random() * Math.PI * 5,
-            z: -Math.random() * Math.PI * pitchAvg * 10,
+            z: -Math.random() * Math.PI * pitchAvg * 20,
             ease: 'elastic.out(0.2)',
           })
         }
       }
+    })
+
+    spotifySync.current?.on('segment', (segment) => {
+      console.log(segment)
     })
 
     return () => {
@@ -188,9 +196,9 @@ export default function Particles() {
                   return (
                     <boxGeometry
                       args={[
-                        2,
-                        2,
-                        2,
+                        3,
+                        3,
+                        3,
                         particleControls.count / 10,
                         particleControls.count / 10,
                         particleControls.count / 10,

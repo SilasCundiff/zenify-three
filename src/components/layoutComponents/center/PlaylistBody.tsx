@@ -21,7 +21,7 @@ const PlaylistBody = ({ playlistData }) => {
   }
 
   return (
-    <div className='flex min-h-min flex-col gap-y-2 overflow-y-auto p-2'>
+    <div className='flex max-h-[calc(100svh-364px)] min-h-min flex-col gap-y-2 overflow-y-auto p-2 md:max-h-[calc(100svh-372px)]'>
       {tracks.items.map(({ track }, i: number) => {
         return (
           <div key={track.id} onClick={() => handleSelectTrack(track, i)}>

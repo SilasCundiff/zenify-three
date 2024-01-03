@@ -10,9 +10,8 @@
 }
 
 html,
-body,
-body > header {
-  height: 100%;
+body {
+  /* height: 100%; */
   margin: 0;
   padding: 0;
   background: transparent;
@@ -24,13 +23,6 @@ body > header {
   }
   .rounded-custom {
     border-radius: 10px;
-  }
-
-  .page-wrapper {
-    min-height: 100dvh;
-    position: fixed !important;
-    inset: 0;
-    width: 100%;
   }
 
   .glass-pane {
@@ -55,7 +47,7 @@ body > header {
 }
 
 .canvas {
-  @apply w-full h-dvh bg-gradient-to-b from-black to-zinc-900;
+  @apply w-full h-svh bg-gradient-to-b from-black to-zinc-900;
   position: fixed !important;
   inset: 0;
   z-index: -1;

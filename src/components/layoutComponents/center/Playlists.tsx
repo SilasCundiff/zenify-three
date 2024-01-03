@@ -23,24 +23,25 @@ function Playlists() {
   }, [session, spotifyApi])
 
   return (
-    <div>
-      <h2 className='mb-2 ml-2 text-2xl'>Your Playlists</h2>
-      <div className='shrink grow overflow-y-auto overflow-x-hidden'>
-        <ul className='flex max-h-[416px] min-h-min flex-wrap gap-4 p-3 text-lg font-normal md:max-h-[816px]'>
+    <>
+      <div className='overflow-y-auto overflow-x-hidden'>
+        <ul className='flex max-h-full flex-wrap gap-4 p-3 text-lg font-normal'>
           {playlists &&
             playlists.map((playlist) => {
               return (
-                <ListItem
-                  key={playlist.id}
-                  playlistId={playlist.id}
-                  playlistTitle={playlist.name}
-                  playlistImageUrl={playlist?.images[0].url}
-                />
+                <>
+                  <ListItem
+                    key={playlist.id}
+                    playlistId={playlist.id}
+                    playlistTitle={playlist.name}
+                    playlistImageUrl={playlist?.images[0].url}
+                  />
+                </>
               )
             })}
         </ul>
       </div>
-    </div>
+    </>
   )
 }
 

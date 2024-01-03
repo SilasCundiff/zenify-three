@@ -5,7 +5,7 @@ interface PageWrapperProps {
 }
 
 const PageWrapper: FunctionComponent<PageWrapperProps> = ({ children }) => {
-  return <div className='page-wrapper flex flex-col text-white'>{children}</div>
+  return <div className='fixed inset-0 flex h-svh flex-col text-white'>{children}</div>
 }
 
 export default PageWrapper

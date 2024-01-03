@@ -83,16 +83,16 @@ function CenterContent() {
       <div
         className={`${
           uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
-        } flex flex-1  basis-full p-2 transition-opacity duration-500 md:p-4`}
+        } flex h-full flex-1 p-2 transition-opacity duration-500 md:p-4`}
       >
-        <div className='rounded-custom no-scrollbar glass-pane container m-auto flex  flex-1 basis-full flex-col overflow-y-auto p-4 md:max-h-[calc(100vh-288px)]'>
-          <button className='ml-0 mr-2 self-start hover:text-gray-300' onClick={handleClearSearchResults}>
+        <div className='content-wrapper__inner rounded-custom no-scrollbar glass-pane container m-auto flex flex-col overflow-y-auto p-4 md:max-h-[calc(100svh-232px)]'>
+          <button className='mb-4 ml-0 mr-2 self-start hover:text-gray-300' onClick={handleClearSearchResults}>
             <span className='ml-2 mr-1'>
               <FontAwesomeIcon icon={faXmark} />
             </span>{' '}
             Clear search results
           </button>
-          <div className='mt-4 flex flex-1 flex-col overflow-y-auto  '>
+          <div className='flex max-h-[calc(100svh-352px)] flex-1 flex-col overflow-y-auto bg-green-500 md:max-h-[calc(100svh-272px)]'>
             {tracksResponseData?.items.map((item, index) => {
               return (
                 <div key={item.id} onClick={() => handleSelectTrack(item)}>
@@ -111,10 +111,11 @@ function CenterContent() {
       <div
         className={`${
           uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
-        } flex flex-1  basis-full p-2 transition-opacity duration-500 md:p-4`}
+        } flex h-full flex-1 p-2 transition-opacity duration-500 md:p-4`}
       >
-        <div className='rounded-custom no-scrollbar glass-pane container m-auto  flex-1 basis-full overflow-y-auto p-4 md:max-h-[calc(100vh-288px)]'>
-          <div className='flex flex-col justify-center align-middle'>
+        <div className='rounded-custom no-scrollbar glass-pane content-wrapper__inner container m-auto h-full p-4 '>
+          <h2 className='mb-2 ml-2 text-2xl'>Your Playlists</h2>
+          <div className='max-h-[calc(100svh-354px)] overflow-y-auto  md:max-h-[calc(100svh-304px)]'>
             <Playlists />
           </div>
         </div>
@@ -126,11 +127,11 @@ function CenterContent() {
     <div
       className={`${
         uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
-      } flex flex-1  basis-full p-2 transition-opacity duration-500 md:p-4`}
+      } flex h-full flex-1 p-2 transition-opacity duration-500 md:p-4`}
     >
-      <div className='rounded-custom no-scrollbar glass-pane container m-auto flex  flex-1 basis-full flex-col overflow-y-auto p-4 md:max-h-[calc(100vh-288px)]'>
-        <button className='mr-2 self-start hover:text-gray-300' onClick={handleClearPlaylist}>
-          <span className='mr-1'>
+      <div className='rounded-custom no-scrollbar glass-pane content-wrapper__inner container m-auto flex h-full max-h-[calc(100svh-280px)] flex-col overflow-y-auto  p-4 md:max-h-[calc(100svh-232px)] '>
+        <button className='mb-4 mr-2  self-start hover:text-gray-300' onClick={handleClearPlaylist}>
+          <span className='ml-2 mr-1'>
             <FontAwesomeIcon icon={faLeftLong} />
           </span>{' '}
           Return to playlist selection
