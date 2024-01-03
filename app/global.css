@@ -26,6 +26,7 @@ body,
   .page-wrapper {
     height: 100vh; /* old browsers */
     height: 100dvh; /* new browsers */
+    height: calc(var(--vh, 1vh) * 100);
     position: fixed;
     inset: 0;
   }
