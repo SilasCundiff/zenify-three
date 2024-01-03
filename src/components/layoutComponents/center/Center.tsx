@@ -70,7 +70,7 @@ function CenterContent() {
   //         uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
   //       } flex flex-1  basis-full items-center justify-center p-2 transition-opacity duration-500 md:p-4`}
   //     >
-  //       <div className='rounded-custom no-scrollbar glass-pane container m-auto flex h-svh max-h-[calc(100vh-288px)] flex-1 basis-full items-center justify-center overflow-y-auto p-4'>
+  //       <div className='rounded-custom no-scrollbar glass-pane container m-auto flex h-svh md:max-h-[calc(100vh-288px)] flex-1 basis-full items-center justify-center overflow-y-auto p-4'>
   //         <LoadingSpinner size='small' />
   //         <span className='ml-4'>Fetching your jams 🎧 </span>
   //       </div>
@@ -85,7 +85,7 @@ function CenterContent() {
           uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
         } flex flex-1  basis-full p-2 transition-opacity duration-500 md:p-4`}
       >
-        <div className='rounded-custom no-scrollbar glass-pane container m-auto flex  max-h-[calc(100vh-288px)] flex-1 basis-full flex-col overflow-y-auto p-4'>
+        <div className='rounded-custom no-scrollbar glass-pane container m-auto flex  flex-1 basis-full flex-col overflow-y-auto p-4 md:max-h-[calc(100vh-288px)]'>
           <button className='ml-0 mr-2 self-start hover:text-gray-300' onClick={handleClearSearchResults}>
             <span className='ml-2 mr-1'>
               <FontAwesomeIcon icon={faXmark} />
@@ -113,7 +113,7 @@ function CenterContent() {
           uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
         } flex flex-1  basis-full p-2 transition-opacity duration-500 md:p-4`}
       >
-        <div className='rounded-custom no-scrollbar glass-pane container m-auto  max-h-[calc(100vh-288px)] flex-1 basis-full overflow-y-auto p-4'>
+        <div className='rounded-custom no-scrollbar glass-pane container m-auto  flex-1 basis-full overflow-y-auto p-4 md:max-h-[calc(100vh-288px)]'>
           <div className='flex flex-col justify-center align-middle'>
             <Playlists />
           </div>
@@ -128,7 +128,7 @@ function CenterContent() {
         uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
       } flex flex-1  basis-full p-2 transition-opacity duration-500 md:p-4`}
     >
-      <div className='rounded-custom no-scrollbar glass-pane container m-auto flex  max-h-[calc(100vh-288px)] flex-1 basis-full flex-col overflow-y-auto p-4'>
+      <div className='rounded-custom no-scrollbar glass-pane container m-auto flex  flex-1 basis-full flex-col overflow-y-auto p-4 md:max-h-[calc(100vh-288px)]'>
         <button className='mr-2 self-start hover:text-gray-300' onClick={handleClearPlaylist}>
           <span className='mr-1'>
             <FontAwesomeIcon icon={faLeftLong} />
