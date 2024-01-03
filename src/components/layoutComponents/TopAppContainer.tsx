@@ -6,7 +6,7 @@ import Center from './center/Center'
 export default function TopAppContainer() {
   const { uiHidden } = useUI()
   return (
-    <div className={` flex-1`}>
+    <div className={` flex-1 grow-0 md:grow`}>
       <Topbar />
       <Center />
     </div>
