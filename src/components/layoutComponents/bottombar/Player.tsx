@@ -167,7 +167,7 @@ const Player = () => {
           </div>
           <FontAwesomeIcon icon={faRepeat} className='button h-4 w-4 md:h-5 md:w-5' onClick={toggleRepeat} />
         </div>
-        <div className=' mr-1 flex items-center justify-end space-x-2'>
+        <div className='mr-1 flex items-center justify-end space-x-2'>
           {volume > 50 && <FontAwesomeIcon icon={faVolumeHigh} className='button h-4 w-4' onClick={handleMuteVolume} />}
           {volume > 0 && volume <= 50 && (
             <FontAwesomeIcon icon={faVolumeLow} className='button h-4 w-4 md:h-4 md:w-4' onClick={handleMuteVolume} />
