@@ -92,7 +92,7 @@ function CenterContent() {
             </span>{' '}
             Clear search results
           </button>
-          <div className='flex max-h-[calc(100svh-352px)] flex-1 flex-col overflow-y-auto bg-green-500 md:max-h-[calc(100svh-272px)]'>
+          <div className='flex max-h-[calc(100svh-352px)] flex-1 flex-col overflow-y-auto  md:max-h-[calc(100svh-272px)]'>
             {tracksResponseData?.items.map((item, index) => {
               return (
                 <div key={item.id} onClick={() => handleSelectTrack(item)}>

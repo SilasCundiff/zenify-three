@@ -4,7 +4,7 @@ import { interpolateRgb, interpolateBasis } from 'd3-interpolate'
 import vertex from '@/helpers/three/shaders/vertex.glsl'
 import fragment from '@/helpers/three/shaders/fragment.glsl'
 import { Center, OrbitControls, shaderMaterial } from '@react-three/drei'
-import { extend, useFrame } from '@react-three/fiber'
+import { extend, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { useControls } from 'leva'
 import gsap from 'gsap'
@@ -12,6 +12,9 @@ import gsap from 'gsap'
 import { useSpotifySongAnalysis, useSpotifyWebSDK } from '@/helpers/hooks'
 import spotifyApi from '@/helpers/spotify'
 import SpotifySync, { Sync } from '@/helpers/managers/SpotifySync'
+const lerp = (v0, v1, t) => {
+  return v0 * (1 - t) + v1 * t
+}
 
 const ParticleMaterial = shaderMaterial(
   {
@@ -46,43 +49,76 @@ export default function Particles() {
   useFrame((state, delta) => {
     if (spotifySync?.current.time && spotifySync && playerState?.paused === false) {
       pointsRef.current.material.uniforms.time.value =
-        (spotifySync.current?.time / 1000) * spotifySync?.current.volume * 0.5
+        (spotifySync.current?.time / 1000) * spotifySync?.current.volume * 0.2
+      const segment = spotifySync.current?.getInterval('segment')
+      console.log({ segment })
+      // const timbreAvg = spotifySync.current?.getInterval('segment').timbre.reduce((a, b) => a + b, 0) / 12
+      const timbres = segment.timbre
+      const pitches = segment.pitches
+      const loudnessMax = segment.loudness_max
+      const loudnessMaxTime = segment.loudness_max_time
+      const loudnessStart = segment.loudness_start
 
-      const timbreAvg = spotifySync.current?.getInterval('segment').timbre.reduce((a, b) => a + b, 0) / 12
+      // console.log({ loudnessMax, loudnessMaxTime, loudnessStart })
 
-      const pitchAvg =
-        spotifySync.current?.getInterval('segment').pitches.reduce((a, b) => a + b, 0) /
-        spotifySync.current?.getInterval('segment').pitches.length
+      const avgLoudness = timbres[0]
+      const brightness = timbres[1]
+      const flatness = timbres[2]
+      const attack = timbres[3]
+      const notIdentifiedIndex4 = timbres[4]
+      const notIdentifiedIndex5 = timbres[5]
+      const notIdentifiedIndex6 = timbres[6]
+      const notIdentifiedIndex7 = timbres[7]
+      const notIdentifiedIndex8 = timbres[8]
+      const notIdentifiedIndex9 = timbres[9]
+      const notIdentifiedIndex10 = timbres[10]
+      const notIdentifiedIndex11 = timbres[11]
 
-      const minPitch = 0
-      const maxPitch = 1
+      // console.log({
+      //   segment,
+      //   notIdentifiedIndex4,
+      //   notIdentifiedIndex5,
+      //   notIdentifiedIndex6,
+      //   notIdentifiedIndex7,
+      //   notIdentifiedIndex8,
+      //   notIdentifiedIndex9,
+      //   notIdentifiedIndex10,
+      //   notIdentifiedIndex11,
+      // })
 
-      const normalizedPitch = (pitchAvg - minPitch) / (maxPitch - minPitch)
-      const newFrequency = normalizedPitch
+      let targetAmplitude = (60 - Math.abs(loudnessMax)) * 0.01 + particleControls.offsetAmplitude
+      let targetFrequency = Math.floor(100 - Math.abs(attack)) / 100
 
-      const minLoudness = -20 // replace with the minimum possible value of loudness_max
-      const maxLoudness = 0 // replace with the maximum possible value of loudness_max
+      const lerpedAmplitude = lerp(pointsRef.current.material.uniforms.amplitude.value, targetAmplitude, 0.05)
+      const lerpedFrequency = lerp(pointsRef.current.material.uniforms.frequency.value, targetFrequency, 0.05)
 
-      const normalizedLoudness =
-        (spotifySync.current?.getInterval('segment').loudness_max - minLoudness) / (maxLoudness - minLoudness) // normalize to 0-1
-      const reversedFrequency = 1 - normalizedLoudness // reverse so that 0 becomes 1 and 1 becomes 0
-      const defaultSize = 2.5
-      const newSize = (defaultSize / reversedFrequency) * 0.025
-      const clampedSize = Math.min(Math.max(newSize, 1.5), 5)
-      // console.log(spotifySync.current?.getInterval('segment'))
-      const loudness = Math.abs(spotifySync.current?.getInterval('segment').loudness_max) * 4
-      const reversedLoudness = 100 - Math.abs(spotifySync.current?.getInterval('segment').loudness_max) * 4
-      const lightness = THREE.MathUtils.clamp(loudness, 50, 100)
-      // pointsRef.current.material.uniforms.size.value = THREE.MathUtils.clamp(reversedLoudness * 0.05, 1.5, 5)
+      pointsRef.current.material.uniforms.amplitude.value = lerpedAmplitude
+      pointsRef.current.material.uniforms.frequency.value = lerpedFrequency
 
-      const minTimbre = 0
-      const maxTimbre = 1
+      // console.log({
+      //   notIdentifiedIndex4,
+      //   notIdentifiedIndex5,
+      //   notIdentifiedIndex6,
+      //   notIdentifiedIndex7,
+      // })
+      // console.log({
+      //   notIdentifiedIndex8,
+      //   notIdentifiedIndex9,
+      //   notIdentifiedIndex10,
+      //   notIdentifiedIndex11,
+      // })
 
-      const normalizedTimbre = Math.abs((timbreAvg - minTimbre) / (maxTimbre - minTimbre))
-      const hue = normalizedTimbre * 36
+      // const minTimbre = 0
+      // const maxTimbre = 1
 
-      const startColor = new THREE.Color('hsl(' + hue + `, 100%, ${lightness}%})`)
-      const endColor = new THREE.Color('hsl(' + hue + `, 100%, ${lightness}%)`)
+      // const normalizedTimbre = Math.abs((timbreAvg - minTimbre) / (maxTimbre - minTimbre))
+      // const hue = normalizedTimbre * 36
+      const hue1 = Math.abs(brightness) * Math.PI + 160
+      const hue2 = Math.abs(brightness) + Math.abs(attack) + Math.PI + 160
+      const lightness = Math.max(Math.min(Math.floor(avgLoudness * 1.5 - particleControls.lightnessOffset), 100), 10)
+
+      const startColor = new THREE.Color('hsl(' + hue1 + `, 100%, ${Math.floor(lightness)}%})`)
+      const endColor = new THREE.Color('hsl(' + hue2 + `, 100%, ${Math.floor(lightness)}%)`)
 
       // Animate the start color
       gsap.to(pointsRef.current.material.uniforms.startColor.value, {
@@ -112,6 +148,7 @@ export default function Particles() {
       pointsRef.current.material.uniforms.startColor.value = startColor
       pointsRef.current.material.uniforms.endColor.value = endColor
       pointsRef.current.material.uniforms.size.value = 2.5
+      pointsRef.current.material.uniforms.amplitude.value = 1.2
     }
   })
 
@@ -121,14 +158,23 @@ export default function Particles() {
       offsetSize: { value: 2, min: 0, max: 10, step: 0.1 },
       // size: { value: 4.5, min: 0, max: 10, step: 0.1 },
       // frequency: { value: 2, min: 0, max: 10, step: 0.1 },
-      amplitude: { value: 1.4, min: 0, max: 10, step: 0.1 },
+      offsetAmplitude: { value: 1, min: 0, max: 10, step: 0.1 },
       offsetGain: { value: 0.6, min: 0, max: 10, step: 0.1 },
       maxDistance: { value: 1.6, min: 0, max: 10, step: 0.1 },
       // startColor: new THREE.Color('hsl(320, 100%, 85%)'), // red
       // endColor: new THREE.Color('hsl(240, 100%, 80%)'), // blue
-      count: { value: 300, min: 0, max: 500, step: 10 },
+      count: { value: 300, min: 0, max: 2500, step: 10 },
+      lightnessOffset: { value: 35, min: 0, max: 100, step: 5 },
       geometryShape: {
-        options: ['TorusGeometry', 'BoxGeometry', 'SphereGeometry', 'CylinderGeometry'],
+        options: [
+          'TorusGeometry',
+          'TorusKnotGeometry',
+          'BoxGeometry',
+          'SphereGeometry',
+          'CylinderGeometry',
+          'DancingStrings',
+          'CircleGeometry',
+        ],
       },
     },
     { collapsed: true },
@@ -141,7 +187,7 @@ export default function Particles() {
       pointsRef.current.material.uniforms.offsetSize.value = particleControls.uOffsetSize
       // pointsRef.current.material.uniforms.size.value = particleControls.size
       // pointsRef.current.material.uniforms.frequency.value = particleControls.frequency
-      pointsRef.current.material.uniforms.amplitude.value = particleControls.amplitude
+      // pointsRef.current.material.uniforms.amplitude.value = particleControls.amplitude
       pointsRef.current.material.uniforms.offsetGain.value = particleControls.offsetGain
       pointsRef.current.material.uniforms.maxDistance.value = particleControls.maxDistance
     }
@@ -150,33 +196,29 @@ export default function Particles() {
   useEffect(() => {
     spotifySync.current = new SpotifySync({ spotifyApi, canvasRef: pointsRef.current })
 
-    spotifySync.current?.on('beat', (beat) => {
-      if (pointsRef.current && spotifySync.current.time) {
-        const pitchAvg =
-          spotifySync.current?.getInterval('segment').pitches.reduce((a, b) => a + b, 0) /
-          spotifySync.current?.getInterval('segment').pitches.length
-        if (Math.random() < 0.5) {
-          gsap.to(pointsRef.current.rotation, {
-            duration: beat.duration, // Either a longer or BPM-synced duration
-            // y: Math.random() * Math.PI * 2,
-            z: Math.random() * Math.PI * pitchAvg * 20,
-            ease: 'elastic.out(0.2)',
-          })
-        }
-        if (Math.random() > 0.5) {
-          gsap.to(pointsRef.current.rotation, {
-            duration: beat.duration, // Either a longer or BPM-synced duration
-            // y: Math.random() * Math.PI * 5,
-            z: -Math.random() * Math.PI * pitchAvg * 20,
-            ease: 'elastic.out(0.2)',
-          })
-        }
-      }
-    })
-
-    spotifySync.current?.on('segment', (segment) => {
-      console.log(segment)
-    })
+    // spotifySync.current?.on('beat', (beat) => {
+    //   if (pointsRef.current && spotifySync.current.time) {
+    //     const pitchAvg =
+    //       spotifySync.current?.getInterval('segment').pitches.reduce((a, b) => a + b, 0) /
+    //       spotifySync.current?.getInterval('segment').pitches.length
+    //     if (Math.random() < 0.5) {
+    //       gsap.to(pointsRef.current.rotation, {
+    //         duration: beat.duration, // Either a longer or BPM-synced duration
+    //         // y: Math.random() * Math.PI * 2,
+    //         z: Math.random() * Math.PI * pitchAvg * 20,
+    //         ease: 'elastic.out(0.2)',
+    //       })
+    //     }
+    //     if (Math.random() > 0.5) {
+    //       gsap.to(pointsRef.current.rotation, {
+    //         duration: beat.duration, // Either a longer or BPM-synced duration
+    //         // y: Math.random() * Math.PI * 5,
+    //         z: -Math.random() * Math.PI * pitchAvg * 20,
+    //         ease: 'elastic.out(0.2)',
+    //       })
+    //     }
+    //   }
+    // })
 
     return () => {
       spotifySync.current = null
@@ -186,7 +228,7 @@ export default function Particles() {
   return (
     <>
       <Center>
-        <OrbitControls />
+        <OrbitControls makeDefault />
         <points ref={pointsRef}>
           {
             // return the selected geometry
@@ -208,9 +250,15 @@ export default function Particles() {
                 case 'SphereGeometry':
                   return <sphereGeometry args={[2, particleControls.count, particleControls.count]} />
                 case 'CylinderGeometry':
-                  return <cylinderGeometry args={[2, 2, 2, particleControls.count]} />
+                  return <cylinderGeometry args={[2, 2, 8, 32, particleControls.count]} />
+                case 'DancingStrings':
+                  return <cylinderGeometry args={[2, 2, 2, 32, particleControls.count]} />
+                case 'CircleGeometry':
+                  return <circleGeometry args={[2, particleControls.count]} />
                 case 'TorusGeometry':
                   return <torusGeometry args={[2, 1, 32, particleControls.count]} />
+                case 'TorusKnotGeometry':
+                  return <torusKnotGeometry args={[10, 3, particleControls.count, 16]} />
                 default:
                   return <torusGeometry args={[2, 1, 32, particleControls.count]} />
               }

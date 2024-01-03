@@ -6,10 +6,6 @@ const PlaylistHeader = ({ playlistData }) => {
   const { name, description, images } = playlistData
   const [imgSrc, setImgSrc] = useState(images[0]?.url)
 
-  useEffect(() => {
-    setImgSrc(images[0]?.url)
-  }, [images])
-
   return (
     <div className='flex flex-wrap p-2'>
       <div className='my-auto shrink-0 '>
@@ -21,6 +17,9 @@ const PlaylistHeader = ({ playlistData }) => {
           width={80}
           placeholder='blur'
           blurDataURL={'/img/album-placeholder-64.png'}
+          onError={() => {
+            setImgSrc('/img/album-placeholder-64.png')
+          }}
         />
       </div>
       <div className=''>

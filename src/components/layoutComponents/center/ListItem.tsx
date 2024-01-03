@@ -7,10 +7,6 @@ const ListItem = ({ playlistId, playlistTitle, playlistImageUrl }) => {
   const { setPlaylist, playlist } = useSelectedPlaylistStore()
   const [imgSrc, setImgSrc] = useState(playlistImageUrl)
 
-  useEffect(() => {
-    setImgSrc(playlistImageUrl)
-  }, [playlistImageUrl])
-
   const handleSelectPlaylist = () => {
     if (playlistId === playlist?.id) return
     setPlaylist(playlistId)

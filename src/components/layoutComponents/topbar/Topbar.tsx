@@ -13,7 +13,7 @@ function Topbar() {
       <div
         className={`${
           uiHidden ? 'opacity-25' : 'opacity-100'
-        } absolute top-16 col-start-1 transition-opacity duration-500 hover:opacity-100 md:top-4`}
+        } pointer-events-auto absolute top-16 col-start-1 transition-opacity duration-500 hover:opacity-100 md:top-4`}
       >
         <Leva titleBar={{ title: 'Particle Settings' }} fill />
       </div>

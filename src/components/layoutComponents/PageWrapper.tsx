@@ -1,3 +1,5 @@
+'use client'
+import { useUI } from '@/helpers/hooks/useUI'
 import { FunctionComponent } from 'react'
 
 interface PageWrapperProps {
@@ -5,7 +7,12 @@ interface PageWrapperProps {
 }
 
 const PageWrapper: FunctionComponent<PageWrapperProps> = ({ children }) => {
-  return <div className='fixed inset-0 flex h-svh flex-col text-white'>{children}</div>
+  const { uiHidden } = useUI()
+  return (
+    <div className={`${uiHidden && 'pointer-events-none'} fixed inset-0 z-10 flex h-svh flex-col text-white`}>
+      {children}
+    </div>
+  )
 }
 
 export default PageWrapper

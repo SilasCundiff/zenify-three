@@ -50,7 +50,7 @@ body {
   @apply w-full h-svh bg-gradient-to-b from-black to-zinc-900;
   position: fixed !important;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
 }
 
 input[type='range'].scrubber-progress {
