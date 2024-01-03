@@ -26,7 +26,7 @@ function Playlists() {
     <div>
       <h2 className='mb-2 ml-2 text-2xl'>Your Playlists</h2>
       <div className='shrink grow overflow-y-auto overflow-x-hidden'>
-        <ul className='flex max-h-[816px] min-h-min flex-wrap gap-4 p-3 text-lg font-normal'>
+        <ul className='flex max-h-[416px] min-h-min flex-wrap gap-4 p-3 text-lg font-normal md:max-h-[816px]'>
           {playlists &&
             playlists.map((playlist) => {
               return (
