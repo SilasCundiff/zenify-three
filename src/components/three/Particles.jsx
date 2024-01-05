@@ -5,8 +5,8 @@ import vertex from '@/helpers/three/shaders/vertex.glsl'
 import fragment from '@/helpers/three/shaders/fragment.glsl'
 import { Center, OrbitControls, shaderMaterial } from '@react-three/drei'
 import { extend, useFrame, useThree } from '@react-three/fiber'
-import { useEffect, useRef } from 'react'
-import { useControls } from 'leva'
+import { use, useEffect, useRef } from 'react'
+import { button, useControls } from 'leva'
 import gsap from 'gsap'
 
 import { useSpotifySongAnalysis, useSpotifyWebSDK } from '@/helpers/hooks'
@@ -38,9 +38,10 @@ export default function Particles() {
   // const { analysis, features } = useSpotifySongAnalysis()
   // const accessToken = spotifyApi.getAccessToken()
   const { playerState } = useSpotifyWebSDK()
+  const controls = useThree((state) => state.controls)
 
   // console.dir({ analysis, features }, { depth: null, colors: true })
-
+  const controlsRef = useRef()
   const particleRef = useRef()
   const pointsRef = useRef()
   const spotifySync = useRef()
@@ -49,10 +50,9 @@ export default function Particles() {
   useFrame((state, delta) => {
     if (spotifySync?.current.time && spotifySync && playerState?.paused === false) {
       pointsRef.current.material.uniforms.time.value =
-        (spotifySync.current?.time / 1000) * spotifySync?.current.volume * 0.2
+        (spotifySync.current?.time / 1000) * spotifySync?.current.volume * 0.5
       const segment = spotifySync.current?.getInterval('segment')
-      console.log({ segment })
-      // const timbreAvg = spotifySync.current?.getInterval('segment').timbre.reduce((a, b) => a + b, 0) / 12
+
       const timbres = segment.timbre
       const pitches = segment.pitches
       const loudnessMax = segment.loudness_max
@@ -63,28 +63,7 @@ export default function Particles() {
 
       const avgLoudness = timbres[0]
       const brightness = timbres[1]
-      const flatness = timbres[2]
       const attack = timbres[3]
-      const notIdentifiedIndex4 = timbres[4]
-      const notIdentifiedIndex5 = timbres[5]
-      const notIdentifiedIndex6 = timbres[6]
-      const notIdentifiedIndex7 = timbres[7]
-      const notIdentifiedIndex8 = timbres[8]
-      const notIdentifiedIndex9 = timbres[9]
-      const notIdentifiedIndex10 = timbres[10]
-      const notIdentifiedIndex11 = timbres[11]
-
-      // console.log({
-      //   segment,
-      //   notIdentifiedIndex4,
-      //   notIdentifiedIndex5,
-      //   notIdentifiedIndex6,
-      //   notIdentifiedIndex7,
-      //   notIdentifiedIndex8,
-      //   notIdentifiedIndex9,
-      //   notIdentifiedIndex10,
-      //   notIdentifiedIndex11,
-      // })
 
       let targetAmplitude = (60 - Math.abs(loudnessMax)) * 0.01 + particleControls.offsetAmplitude
       let targetFrequency = Math.floor(100 - Math.abs(attack)) / 100
@@ -95,37 +74,32 @@ export default function Particles() {
       pointsRef.current.material.uniforms.amplitude.value = lerpedAmplitude
       pointsRef.current.material.uniforms.frequency.value = lerpedFrequency
 
-      // console.log({
-      //   notIdentifiedIndex4,
-      //   notIdentifiedIndex5,
-      //   notIdentifiedIndex6,
-      //   notIdentifiedIndex7,
-      // })
-      // console.log({
-      //   notIdentifiedIndex8,
-      //   notIdentifiedIndex9,
-      //   notIdentifiedIndex10,
-      //   notIdentifiedIndex11,
-      // })
-
       // const minTimbre = 0
       // const maxTimbre = 1
 
       // const normalizedTimbre = Math.abs((timbreAvg - minTimbre) / (maxTimbre - minTimbre))
       // const hue = normalizedTimbre * 36
-      const hue1 = Math.abs(brightness) * Math.PI + 160
-      const hue2 = Math.abs(brightness) + Math.abs(attack) + Math.PI + 160
-      const lightness = Math.max(Math.min(Math.floor(avgLoudness * 1.5 - particleControls.lightnessOffset), 100), 10)
+      const hue1 = Math.abs(brightness) * Math.PI + particleControls.offsetHue * 2
+      const hue2 = Math.abs(brightness) + Math.abs(attack) + Math.PI + particleControls.offsetHue
+      const lightness =
+        100 - Math.max(Math.min(Math.floor(avgLoudness * 1.2 - particleControls.lightnessOffset), 30), 0)
+      // console.log({ hue1, hue2, lightness })
 
-      const startColor = new THREE.Color('hsl(' + hue1 + `, 100%, ${Math.floor(lightness)}%})`)
+      // const startColor = new THREE.Color('hsl(' + hue1 + `, 100%, ${Math.floor(lightness)}%)`)
+      const startColor = new THREE.Color('hsl(' + hue1 + `, 100%, ${Math.floor(lightness)}%)`)
       const endColor = new THREE.Color('hsl(' + hue2 + `, 100%, ${Math.floor(lightness)}%)`)
+
+      // console.log({ startColor, endColor, hue1, hue2 })
+
+      // const startColor = new THREE.Color('hsl(' + hue1 + `, 100%, 50%})`)
+      // const endColor = new THREE.Color('hsl(' + hue2 + `, 100%, 50%)`)
 
       // Animate the start color
       gsap.to(pointsRef.current.material.uniforms.startColor.value, {
         r: startColor.r,
         g: startColor.g,
         b: startColor.b,
-        duration: 1, // Adjust the duration to make the transition slower or faster
+        duration: 0.5, // Adjust the duration to make the transition slower or faster
         onUpdate: () => {
           pointsRef.current.material.uniforms.startColor.needsUpdate = true
         },
@@ -136,7 +110,7 @@ export default function Particles() {
         r: endColor.r,
         g: endColor.g,
         b: endColor.b,
-        duration: 1, // Adjust the duration to make the transition slower or faster
+        duration: 0.5, // Adjust the duration to make the transition slower or faster
         onUpdate: () => {
           pointsRef.current.material.uniforms.endColor.needsUpdate = true
         },
@@ -147,7 +121,7 @@ export default function Particles() {
       const endColor = new THREE.Color('hsl(240, 100%, 80%)')
       pointsRef.current.material.uniforms.startColor.value = startColor
       pointsRef.current.material.uniforms.endColor.value = endColor
-      pointsRef.current.material.uniforms.size.value = 2.5
+      // pointsRef.current.material.uniforms.size.value = 4.5
       pointsRef.current.material.uniforms.amplitude.value = 1.2
     }
   })
@@ -156,15 +130,16 @@ export default function Particles() {
     'Particles',
     {
       offsetSize: { value: 2, min: 0, max: 10, step: 0.1 },
-      // size: { value: 4.5, min: 0, max: 10, step: 0.1 },
+      size: { value: 2.5, min: 0, max: 10, step: 0.1 },
       // frequency: { value: 2, min: 0, max: 10, step: 0.1 },
-      offsetAmplitude: { value: 1, min: 0, max: 10, step: 0.1 },
+      offsetAmplitude: { value: 0.7, min: 0, max: 10, step: 0.1 },
       offsetGain: { value: 0.6, min: 0, max: 10, step: 0.1 },
-      maxDistance: { value: 1.6, min: 0, max: 10, step: 0.1 },
+      maxDistance: { value: 2.4, min: 0, max: 10, step: 0.1 },
       // startColor: new THREE.Color('hsl(320, 100%, 85%)'), // red
       // endColor: new THREE.Color('hsl(240, 100%, 80%)'), // blue
-      count: { value: 300, min: 0, max: 2500, step: 10 },
-      lightnessOffset: { value: 35, min: 0, max: 100, step: 5 },
+      count: { value: 500, min: 0, max: 2500, step: 10 },
+      lightnessOffset: { value: 45, min: 0, max: 100, step: 5 },
+      offsetHue: { value: 160, min: 0, max: 360, step: 10 },
       geometryShape: {
         options: [
           'TorusGeometry',
@@ -176,6 +151,19 @@ export default function Particles() {
           'CircleGeometry',
         ],
       },
+      // Reset: button(() => {
+      //   pointsRef.current.material.uniforms.startColor.value = new THREE.Color('hsl(320, 100%, 85%)')
+      //   pointsRef.current.material.uniforms.endColor.value = new THREE.Color('hsl(240, 100%, 80%)')
+      //   pointsRef.current.material.uniforms.offsetSize.value = 2
+      //   pointsRef.current.material.uniforms.size.value = 2.5
+      //   pointsRef.current.material.uniforms.frequency.value = 2
+      //   pointsRef.current.material.uniforms.amplitude.value = 1.2
+      //   pointsRef.current.material.uniforms.offsetGain.value = 0.6
+      //   pointsRef.current.material.uniforms.maxDistance.value = 1.6
+      // }),
+      // 'Reset Camera': button(() => {
+      //   if (controls) controlsRef.current.reset()
+      // }),
     },
     { collapsed: true },
   )
@@ -185,13 +173,18 @@ export default function Particles() {
       pointsRef.current.material.uniforms.startColor.value = new THREE.Color(particleControls.startColor)
       pointsRef.current.material.uniforms.endColor.value = new THREE.Color(particleControls.endColor)
       pointsRef.current.material.uniforms.offsetSize.value = particleControls.uOffsetSize
-      // pointsRef.current.material.uniforms.size.value = particleControls.size
+      pointsRef.current.material.uniforms.size.value = particleControls.size
       // pointsRef.current.material.uniforms.frequency.value = particleControls.frequency
       // pointsRef.current.material.uniforms.amplitude.value = particleControls.amplitude
       pointsRef.current.material.uniforms.offsetGain.value = particleControls.offsetGain
       pointsRef.current.material.uniforms.maxDistance.value = particleControls.maxDistance
     }
   }, [particleControls])
+
+  // useEffect(() => {
+  //   // set controls to ref
+  //   controlsRef.current = controls
+  // }, [controls])
 
   useEffect(() => {
     spotifySync.current = new SpotifySync({ spotifyApi, canvasRef: pointsRef.current })
