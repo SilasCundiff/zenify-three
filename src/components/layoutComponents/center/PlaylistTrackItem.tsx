@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import { convertMsToMinutes } from '@/helpers/time'
+import { convertMsToMinutes } from '@/helpers/utils/time'
 import { useEffect, useState } from 'react'
 
 const PlaylistTrackItem = ({ track, order }) => {

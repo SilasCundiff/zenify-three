@@ -1,20 +1,16 @@
 'use client'
 import * as THREE from 'three'
-import { interpolateRgb, interpolateBasis } from 'd3-interpolate'
 import vertex from '@/helpers/three/shaders/vertex.glsl'
 import fragment from '@/helpers/three/shaders/fragment.glsl'
 import { Center, OrbitControls, shaderMaterial } from '@react-three/drei'
 import { extend, useFrame, useThree } from '@react-three/fiber'
-import { use, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { button, useControls } from 'leva'
-import gsap from 'gsap'
+import { lerp } from '@/helpers/utils/util-functions'
 
-import { useSpotifySongAnalysis, useSpotifyWebSDK } from '@/helpers/hooks'
+import { useSpotifyWebSDK } from '@/helpers/hooks'
 import spotifyApi from '@/helpers/spotify'
-import SpotifySync, { Sync } from '@/helpers/managers/SpotifySync'
-const lerp = (v0, v1, t) => {
-  return v0 * (1 - t) + v1 * t
-}
+import SpotifySync from '@/helpers/managers/SpotifySync'
 
 const ParticleMaterial = shaderMaterial(
   {
@@ -50,6 +46,8 @@ export default function Particles() {
   useFrame((state, delta) => {
     if (spotifySync?.current.time && spotifySync && playerState?.paused === false) {
       const features = spotifySync.current?.state.trackFeatures
+      const { energy, mode, key, acousticness, tempo, valence } = features
+
       const segment = spotifySync.current?.getInterval('segment')
       const timbres = segment.timbre
       const pitches = segment.pitches
@@ -68,7 +66,7 @@ export default function Particles() {
         features.energy *
         particleControls.OffsetVolume
 
-      console.log({ segment, features })
+      console.log({ segment, energy, mode, key, acousticness, tempo, valence })
 
       let targetAmplitude = (60 - Math.abs(loudnessMax)) * 0.01 + particleControls.offsetAmplitude
       let targetFrequency = Math.floor(100 - Math.abs(attack)) / 100
@@ -84,46 +82,83 @@ export default function Particles() {
 
       // const normalizedTimbre = Math.abs((timbreAvg - minTimbre) / (maxTimbre - minTimbre))
       // const hue = normalizedTimbre * 36
-      const hue1 = Math.abs(brightness) * Math.PI + particleControls.offsetHue * 2
-      const hue2 = Math.abs(brightness) + Math.abs(attack) + Math.PI + particleControls.offsetHue
+      const hue1 = Math.abs(brightness) * (Math.PI * 2) + particleControls.offsetHue
+      const hue2 = Math.abs(brightness) + Math.abs(attack) + Math.PI * 2 + particleControls.offsetHue
       const lightness =
         100 - Math.max(Math.min(Math.floor(avgLoudness * 1.2 - particleControls.lightnessOffset), 30), 0)
       // console.log({ hue1, hue2, lightness })
 
       // const startColor = new THREE.Color('hsl(' + hue1 + `, 100%, ${Math.floor(lightness)}%)`)
-      const startColor = new THREE.Color('hsl(' + hue1 + `, 100%, ${Math.floor(lightness)}%)`)
-      const endColor = new THREE.Color('hsl(' + hue2 + `, 100%, ${Math.floor(lightness)}%)`)
+      const startColor = new THREE.Color('hsl(' + hue1 + `, 75%, ${Math.floor(lightness)}%)`)
+      const endColor = new THREE.Color('hsl(' + hue2 + `, 75%, ${Math.floor(lightness)}%)`)
+      console.log({ startColor, endColor, hue1, hue2 })
 
       // console.log({ startColor, endColor, hue1, hue2 })
 
       // const startColor = new THREE.Color('hsl(' + hue1 + `, 100%, 50%})`)
       // const endColor = new THREE.Color('hsl(' + hue2 + `, 100%, 50%)`)
-
       // Animate the start color
-      gsap.to(pointsRef.current.material.uniforms.startColor.value, {
-        r: startColor.r,
-        g: startColor.g,
-        b: startColor.b,
-        duration: 0.5, // Adjust the duration to make the transition slower or faster
-        onUpdate: () => {
-          pointsRef.current.material.uniforms.startColor.needsUpdate = true
-        },
-      })
+      let startColorTarget = { r: startColor.r, g: startColor.g, b: startColor.b }
+      let endColorTarget = { r: endColor.r, g: endColor.g, b: endColor.b }
 
-      // Animate the end color
-      gsap.to(pointsRef.current.material.uniforms.endColor.value, {
-        r: endColor.r,
-        g: endColor.g,
-        b: endColor.b,
-        duration: 0.5, // Adjust the duration to make the transition slower or faster
-        onUpdate: () => {
-          pointsRef.current.material.uniforms.endColor.needsUpdate = true
-        },
-      })
+      pointsRef.current.material.uniforms.startColor.value.r = lerp(
+        pointsRef.current.material.uniforms.startColor.value.r,
+        startColorTarget.r,
+        0.05,
+      )
+      pointsRef.current.material.uniforms.startColor.value.g = lerp(
+        pointsRef.current.material.uniforms.startColor.value.g,
+        startColorTarget.g,
+        0.05,
+      )
+      pointsRef.current.material.uniforms.startColor.value.b = lerp(
+        pointsRef.current.material.uniforms.startColor.value.b,
+        startColorTarget.b,
+        0.05,
+      )
+      pointsRef.current.material.uniforms.startColor.needsUpdate = true
+
+      pointsRef.current.material.uniforms.endColor.value.r = lerp(
+        pointsRef.current.material.uniforms.endColor.value.r,
+        endColorTarget.r,
+        0.05,
+      )
+      pointsRef.current.material.uniforms.endColor.value.g = lerp(
+        pointsRef.current.material.uniforms.endColor.value.g,
+        endColorTarget.g,
+        0.05,
+      )
+      pointsRef.current.material.uniforms.endColor.value.b = lerp(
+        pointsRef.current.material.uniforms.endColor.value.b,
+        endColorTarget.b,
+        0.05,
+      )
+      pointsRef.current.material.uniforms.endColor.needsUpdate = true
+
+      // gsap.to(pointsRef.current.material.uniforms.startColor.value, {
+      //   r: startColor.r,
+      //   g: startColor.g,
+      //   b: startColor.b,
+      //   duration: 0.5, // Adjust the duration to make the transition slower or faster
+      //   onUpdate: () => {
+      //     pointsRef.current.material.uniforms.startColor.needsUpdate = true
+      //   },
+      // })
+
+      // // Animate the end color
+      // gsap.to(pointsRef.current.material.uniforms.endColor.value, {
+      //   r: endColor.r,
+      //   g: endColor.g,
+      //   b: endColor.b,
+      //   duration: 0.5, // Adjust the duration to make the transition slower or faster
+      //   onUpdate: () => {
+      //     pointsRef.current.material.uniforms.endColor.needsUpdate = true
+      //   },
+      // })
     } else {
       pointsRef.current.material.uniforms.time.value += delta
-      const startColor = new THREE.Color('hsl(320, 100%, 85%)')
-      const endColor = new THREE.Color('hsl(240, 100%, 80%)')
+      const startColor = new THREE.Color('hsl(320, 50%, 85%)')
+      const endColor = new THREE.Color('hsl(240, 50%, 80%)')
       pointsRef.current.material.uniforms.startColor.value = startColor
       pointsRef.current.material.uniforms.endColor.value = endColor
       // pointsRef.current.material.uniforms.size.value = 4.5
