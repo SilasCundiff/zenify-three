@@ -11,7 +11,6 @@ import { faLeftLong, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { useSearchTracksStore } from '@/helpers/hooks/useSearch'
 import PlaylistTrackItem from './PlaylistTrackItem'
 import { useUI } from '@/helpers/hooks/useUI'
-import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 function CenterContent() {
   const { setPlaylist, playlist } = useSelectedPlaylistStore()
@@ -19,7 +18,7 @@ function CenterContent() {
   const spotifyApi = useSpotifyApi()
   const { status } = useSession()
   const { tracksResponseData, setResetTracksResponseData } = useSearchTracksStore()
-  const { uiHidden } = useUI()
+  const { uiHidden, hideCenterContentOnly } = useUI()
 
   const handleClearPlaylist = () => {
     setPlaylist(null)
@@ -82,7 +81,7 @@ function CenterContent() {
     return (
       <div
         className={`${
-          uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
+          uiHidden || hideCenterContentOnly ? 'pointer-events-none opacity-0' : 'opacity-100'
         } flex h-full flex-1 p-2 transition-opacity duration-500 md:p-4`}
       >
         <div className='content-wrapper__inner rounded-custom no-scrollbar glass-pane container m-auto flex flex-col overflow-y-auto p-4 md:max-h-[calc(100svh-232px)]'>
@@ -110,7 +109,7 @@ function CenterContent() {
     return (
       <div
         className={`${
-          uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
+          uiHidden || hideCenterContentOnly ? 'pointer-events-none opacity-0' : 'opacity-100'
         } flex h-full flex-1 p-2 transition-opacity duration-500 md:p-4`}
       >
         <div className='rounded-custom no-scrollbar glass-pane content-wrapper__inner container m-auto h-full p-4 '>
@@ -126,7 +125,7 @@ function CenterContent() {
   return (
     <div
       className={`${
-        uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
+        uiHidden || hideCenterContentOnly ? 'pointer-events-none opacity-0' : 'opacity-100'
       } flex h-full flex-1 p-2 transition-opacity duration-500 md:p-4`}
     >
       <div className='rounded-custom no-scrollbar glass-pane content-wrapper__inner container m-auto flex h-full max-h-[calc(100svh-280px)] flex-col overflow-y-auto  p-4 md:max-h-[calc(100svh-232px)] '>

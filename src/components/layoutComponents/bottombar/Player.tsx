@@ -14,6 +14,7 @@ import {
   faForwardStep,
   faEye,
   faEyeSlash,
+  faWindowClose,
 } from '@fortawesome/free-solid-svg-icons'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -24,7 +25,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 const Player = () => {
   const { player, playerState } = useSpotifyWebSDK()
-  const { uiHidden, setUiHidden } = useUI()
+  const { uiHidden, setUiHidden, hideCenterContentOnly, setHideCenterContentOnly } = useUI()
   const [spotifySessionDoesntExist, setSpotifySessionDoesntExist] = useState(false)
   const spotifyApi = useSpotifyApi()
   const [volume, setVolume] = useState(1)
@@ -85,6 +86,10 @@ const Player = () => {
     }
   }
 
+  const handleHideCenterContent = () => {
+    setHideCenterContentOnly(!hideCenterContentOnly)
+  }
+
   const debouncedVolumeChange = useCallback(
     (volume: number) => {
       const debounced = debounce(() => {
@@ -123,6 +128,13 @@ const Player = () => {
       }
     }, 10000)
     return () => clearTimeout(timeout)
+  }, [playerState])
+
+  // if the player connects and is loaded, remove the message
+  useEffect(() => {
+    if (playerState?.loading === false) {
+      setSpotifySessionDoesntExist(false)
+    }
   }, [playerState])
 
   if (spotifySessionDoesntExist) {
@@ -180,6 +192,11 @@ const Player = () => {
               <FontAwesomeIcon icon={faEye} />
             </button>
           )}
+          {
+            <button className='button h-8 w-8 md:h-8 md:w-8' onClick={handleHideCenterContent}>
+              <FontAwesomeIcon icon={faWindowClose} />
+            </button>
+          }
         </div>
         <div className='col-start-2 flex items-center justify-center space-x-4  md:space-x-8 md:px-2'>
           <FontAwesomeIcon

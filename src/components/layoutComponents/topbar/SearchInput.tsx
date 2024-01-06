@@ -1,5 +1,4 @@
-import { useSpotifyApi } from '@/helpers/hooks'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSearchTracksStore } from '@/helpers/hooks/useSearch'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
@@ -12,6 +11,10 @@ export default function SearchInput() {
     e.preventDefault()
     if (!search) return
     setTracksResponseData(search)
+  }
+
+  const handleInputEvent = (e) => {
+    setSearch(e.target.value)
   }
 
   return (
@@ -27,7 +30,7 @@ export default function SearchInput() {
           id='search'
           value={search}
           placeholder='Search for a song'
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => handleInputEvent(e)}
           maxLength={50}
         />
         <button
