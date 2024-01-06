@@ -46,6 +46,14 @@ const Player = () => {
     player.previousTrack()
   }
 
+  const handleNextTrack = () => {
+    if (playerState?.repeat_mode === 2) {
+      player.seek(0)
+      return
+    }
+    player.nextTrack()
+  }
+
   const handleSeekBackward = () => {
     player.seek(0)
   }
@@ -79,7 +87,7 @@ const Player = () => {
   const debouncedVolumeChange = useCallback(
     (volume: number) => {
       const debounced = debounce(() => {
-        if (!spotifyApi || !playerState) {
+        if (!spotifyApi || !playerState || playerState.loading) {
           return
         }
         spotifyApi?.setVolume(volume).catch((err) => {
@@ -97,7 +105,14 @@ const Player = () => {
     }
   }, [volume, debouncedVolumeChange])
 
-  console.log(playerState, player)
+  // cleanup player
+  useEffect(() => {
+    return () => {
+      if (player) {
+        player.disconnect()
+      }
+    }
+  }, [player])
 
   if (!playerState || playerState.loading) {
     return (
@@ -165,11 +180,7 @@ const Player = () => {
                 onClick={() => player.resume()}
               />
             )}
-            <FontAwesomeIcon
-              icon={faForwardStep}
-              className='button h-6 w-6 md:h-7 md:w-7'
-              onClick={() => player.nextTrack()}
-            />
+            <FontAwesomeIcon icon={faForwardStep} className='button h-6 w-6 md:h-7 md:w-7' onClick={handleNextTrack} />
           </div>
           <span className={`button relative ${playerState?.repeat_mode !== 0 ? 'text-sky-500' : ''}`}>
             <FontAwesomeIcon icon={faRepeat} className={`h-4 w-4 md:h-5 md:w-5 `} onClick={toggleRepeat} />

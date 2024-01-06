@@ -4,7 +4,6 @@ import spotifyApi from '@/helpers/spotify'
 
 const PlaylistBody = ({ playlistData }) => {
   const { tracks, uri } = playlistData
-  console.log('playlistData', playlistData)
 
   const handleSelectTrack = (track, offset) => {
     playSelectedSong({ ...track, offset, context: { type: 'playlist', uri } })
