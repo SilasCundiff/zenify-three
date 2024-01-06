@@ -18,6 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
 
 import ProgressBar from './ProgressBar'
 import { useUI } from '@/helpers/hooks/useUI'
@@ -30,6 +31,7 @@ const Player = () => {
   const spotifyApi = useSpotifyApi()
   const [volume, setVolume] = useState(1)
   const prevVolumeRef = useRef(1)
+  const playerRef = useRef(null)
 
   const handleVolumeChange = (value) => {
     setVolume(value)
@@ -137,9 +139,21 @@ const Player = () => {
     }
   }, [playerState])
 
+  // gsap animation to slide the player in from the bottom
+  useEffect(() => {
+    gsap.to(playerRef.current, { y: 0, duration: 1.5, ease: 'power2.out' })
+
+    return () => {
+      gsap.to(playerRef.current, { y: 100, duration: 0.5, ease: 'power2.in' })
+    }
+  }, [])
+
   if (spotifySessionDoesntExist) {
     return (
-      <div className='glass-pane md:rounded-custom mx-auto flex h-24 min-h-24 w-full max-w-lg shrink-0 rounded-none p-2 text-xs md:text-base'>
+      <div
+        ref={playerRef}
+        className='glass-pane md:rounded-custom mx-auto flex h-24 min-h-24 w-full max-w-lg shrink-0 translate-y-[200%] rounded-none p-2 text-xs md:text-base'
+      >
         <p className='m-auto flex flex-col text-center text-sm'>
           <span className='ml-4'>You need to have an active Spotify session to use this feature!</span>
           <span className='ml-4'>
@@ -155,7 +169,10 @@ const Player = () => {
 
   if (!playerState || playerState.loading) {
     return (
-      <div className='glass-pane md:rounded-custom mx-auto flex h-24 min-h-24 w-full max-w-lg shrink-0 rounded-none p-2 text-xs md:text-base'>
+      <div
+        ref={playerRef}
+        className='glass-pane md:rounded-custom mx-auto flex h-24 min-h-24 w-full max-w-lg shrink-0 translate-y-[200%] rounded-none p-2 text-xs md:text-base'
+      >
         <p className='m-auto flex'>
           <LoadingSpinner size='small' />
           <span className='ml-4'>Connecting your player 📻</span>
@@ -166,6 +183,7 @@ const Player = () => {
 
   return (
     <div
+      ref={playerRef}
       className={`${
         uiHidden ? 'opacity-10' : 'opacity-100'
       } glass-pane md:rounded-custom mx-auto h-24 w-full max-w-lg rounded-none p-2 text-xs transition-opacity duration-500 hover:opacity-100 md:text-base`}
@@ -175,6 +193,7 @@ const Player = () => {
         <div className='col-start-1 flex items-center '>
           {uiHidden ? (
             <button
+              title='Show UI'
               className='button h-8 w-8 md:h-8 md:w-8'
               onClick={() => {
                 setUiHidden(false)
@@ -185,6 +204,7 @@ const Player = () => {
           ) : (
             <button
               className='button h-8 w-8 md:h-8 md:w-8'
+              title='Hide UI'
               onClick={() => {
                 setUiHidden(true)
               }}
@@ -193,7 +213,11 @@ const Player = () => {
             </button>
           )}
           {
-            <button className='button h-8 w-8 md:h-8 md:w-8' onClick={handleHideCenterContent}>
+            <button
+              className='button h-8 w-8 md:h-8 md:w-8'
+              onClick={handleHideCenterContent}
+              title='Hide Center Display'
+            >
               <FontAwesomeIcon icon={faWindowClose} />
             </button>
           }
@@ -246,6 +270,7 @@ const Player = () => {
             className='volume-slider '
             type='range'
             value={volume}
+            title={`Volume: ${volume}`}
             min={0}
             max={100}
             step={1}

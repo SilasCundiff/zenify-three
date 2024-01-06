@@ -28,7 +28,7 @@ function Topbar() {
         <button
           className={`${
             uiHidden ? 'opacity-10' : 'opacity-100'
-          } rounded-custom pointer-events-auto flex min-h-11 w-fit min-w-11 items-center justify-center bg-slate-50 p-2 font-semibold text-black transition-opacity duration-500 hover:opacity-100 md:px-4`}
+          } rounded-custom pointer-events-auto relative flex min-h-11 w-fit min-w-11 items-center justify-center overflow-hidden text-clip bg-slate-50 p-2 font-semibold text-black transition-all duration-500 hover:scale-110 hover:opacity-100 md:px-4`}
           onClick={() => {
             setUiHidden(!uiHidden)
           }}
@@ -38,11 +38,11 @@ function Topbar() {
         <button
           className={`${
             uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
-          } rounded-custom ml-2 flex min-h-11 w-fit min-w-11 items-center bg-slate-50 p-2 font-semibold text-black transition-opacity duration-500 md:px-4 `}
+          } rounded-custom ml-2 flex min-h-11 w-fit min-w-11 items-center bg-slate-50 p-2 font-semibold text-black transition-all duration-500 hover:scale-110 md:px-4 md:py-1`}
           onClick={() => signOut()}
         >
           <span className='hidden md:inline'>Logout</span>
-          <FontAwesomeIcon icon={faSignOut} className=' m-auto md:ml-2 md:mt-1' />
+          <FontAwesomeIcon icon={faSignOut} className='m-auto md:my-2 md:ml-2' />
         </button>
       </div>
     </div>

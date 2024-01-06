@@ -1,6 +1,6 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { useSpotifyApi, useSpotifyWebSDK } from '@/helpers/hooks/useSpotify'
+import { useEffect, useRef, useState } from 'react'
+import { useSpotifyApi } from '@/helpers/hooks/useSpotify'
 import { useSession } from 'next-auth/react'
 import { useSelectedPlaylistStore } from '@/helpers/hooks/usePlaylist'
 import PlaylistBody from './PlaylistBody'
@@ -61,22 +61,6 @@ function CenterContent() {
     }
   }, [playlist, spotifyApi, status])
 
-  // console.log('playlistData', playerState)
-  // if (playerState.loading) {
-  //   return (
-  //     <div
-  //       className={`${
-  //         uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
-  //       } flex flex-1  basis-full items-center justify-center p-2 transition-opacity duration-500 md:p-4`}
-  //     >
-  //       <div className='rounded-custom no-scrollbar glass-pane container m-auto flex h-svh md:max-h-[calc(100vh-288px)] flex-1 basis-full items-center justify-center overflow-y-auto p-4'>
-  //         <LoadingSpinner size='small' />
-  //         <span className='ml-4'>Fetching your jams 🎧 </span>
-  //       </div>
-  //     </div>
-  //   )
-  // }
-
   if (tracksResponseData) {
     return (
       <div
@@ -112,7 +96,7 @@ function CenterContent() {
           uiHidden || hideCenterContentOnly ? 'pointer-events-none opacity-0' : 'opacity-100'
         } flex h-full flex-1 p-2 transition-opacity duration-500 md:p-4`}
       >
-        <div className='rounded-custom no-scrollbar glass-pane content-wrapper__inner container m-auto h-full p-4 '>
+        <div className='rounded-custom no-scrollbar glass-pane content-wrapper__inner container m-auto h-full p-4'>
           <h2 className='mb-2 ml-2 text-2xl'>Your Playlists</h2>
           <div className='max-h-[calc(100svh-354px)] overflow-y-auto  md:max-h-[calc(100svh-304px)]'>
             <Playlists />

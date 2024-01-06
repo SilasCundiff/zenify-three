@@ -1,13 +1,23 @@
 'use client'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import gsap from 'gsap'
 
 const PlaylistHeader = ({ playlistData }) => {
   const { name, description, images } = playlistData
   const [imgSrc, setImgSrc] = useState(images[0]?.url)
+  const headerRef = useRef(null)
+
+  useEffect(() => {
+    gsap.to(headerRef.current, { autoAlpha: 1, duration: 0.5, ease: 'power2.in' })
+
+    return () => {
+      gsap.to(headerRef.current, { autoAlpha: 0, duration: 0.5, ease: 'power2.out' })
+    }
+  }, [])
 
   return (
-    <div className='flex flex-wrap p-2'>
+    <div className='flex flex-wrap p-2 opacity-0' ref={headerRef}>
       <div className='my-auto shrink-0 '>
         <Image
           src={imgSrc ? imgSrc : '/img/album-placeholder-64.png'}
