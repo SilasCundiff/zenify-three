@@ -139,7 +139,7 @@ export default function Particles() {
       const colorEntry = colorMap.find((entry) => entry.note === note && entry.mode === mode)
       const color = colorEntry ? colorEntry.color : '#FFFFFF' // default to white if no color found
 
-      const lightness = 100 - Math.max(Math.min(Math.floor(avgLoudness * 1.2 - lightnessOffset), 30), 0)
+      const lightness = 100 - Math.max(Math.min(Math.floor(avgLoudness * 1.5 - lightnessOffset), 30), 0)
 
       let startColorTarget = new THREE.Color(color)
       let endColorTarget = new THREE.Color(color)
@@ -209,7 +209,7 @@ export default function Particles() {
     offsetGain: { value: 0.6, min: 0, max: 10, step: 0.1 },
     maxDistance: { value: 2.4, min: 0, max: 10, step: 0.1 },
     count: { value: 500, min: 0, max: 2500, step: 10 },
-    lightnessOffset: { value: 45, min: 0, max: 100, step: 5 },
+    lightnessOffset: { value: 0, min: 0, max: 100, step: 5 },
     OffsetVolume: { value: 0.5, min: 0.01, max: 1, step: 0.01 },
     geometryShape: {
       options: [
