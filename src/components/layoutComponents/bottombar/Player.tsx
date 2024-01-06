@@ -25,6 +25,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 const Player = () => {
   const { player, playerState } = useSpotifyWebSDK()
   const { uiHidden, setUiHidden } = useUI()
+  const [spotifySessionDoesntExist, setSpotifySessionDoesntExist] = useState(false)
   const spotifyApi = useSpotifyApi()
   const [volume, setVolume] = useState(1)
   const prevVolumeRef = useRef(1)
@@ -113,6 +114,32 @@ const Player = () => {
       }
     }
   }, [player])
+
+  // if the player takes more than 5 seconds to load, display a message informing the user that they need to have an active spotify session
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (playerState?.loading) {
+        setSpotifySessionDoesntExist(true)
+      }
+    }, 10000)
+    return () => clearTimeout(timeout)
+  }, [playerState])
+
+  if (spotifySessionDoesntExist) {
+    return (
+      <div className='glass-pane md:rounded-custom mx-auto flex h-24 min-h-24 w-full max-w-lg shrink-0 rounded-none p-2 text-xs md:text-base'>
+        <p className='m-auto flex flex-col text-center text-sm'>
+          <span className='ml-4'>You need to have an active Spotify session to use this feature!</span>
+          <span className='ml-4'>
+            Please <span className='text-sky-300'>open spotify</span> on any device and start a song,
+          </span>
+          <span className='ml-4'>
+            then come back here and <span className='text-sky-300'>refresh the page</span>!
+          </span>
+        </p>
+      </div>
+    )
+  }
 
   if (!playerState || playerState.loading) {
     return (
