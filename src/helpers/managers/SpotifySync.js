@@ -8,6 +8,14 @@ export default class SpotifySync {
     const accessToken = useTokenStore.getState().accessToken
     // const refreshToken = spotifyApi.getRefreshToken()
 
+    // make sure the access token is updated when it changes
+    useTokenStore.subscribe(
+      (accessToken) => {
+        this.state.apiConstants.tokens.accessToken = accessToken
+      },
+      (state) => state.accessToken,
+    )
+
     this.canvas = canvasRef
 
     this.state = Observe({
@@ -80,7 +88,7 @@ export default class SpotifySync {
 
   async getCurrentlyPlaying() {
     const { spotifyApi } = this.state
-    const token = this.state.spotifyApi.getAccessToken()
+    const token = this.state.apiConstants.tokens.accessToken
     if (!token) {
       return this.ping()
     }
@@ -106,8 +114,7 @@ export default class SpotifySync {
   }
 
   async getTrackInfo({ item, progress_ms }) {
-    // check token {}
-    const token = this.state.spotifyApi.getAccessToken()
+    const token = this.state.apiConstants.tokens.accessToken
     if (!token || !item) {
       return this.ping()
     }

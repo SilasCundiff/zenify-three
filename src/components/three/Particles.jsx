@@ -4,9 +4,10 @@ import vertex from '@/helpers/three/shaders/vertex.glsl'
 import fragment from '@/helpers/three/shaders/fragment.glsl'
 import { Center, OrbitControls, shaderMaterial } from '@react-three/drei'
 import { extend, useFrame, useThree } from '@react-three/fiber'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { button, useControls } from 'leva'
 import { lerp } from '@/helpers/utils/util-functions'
+import { debounce } from 'lodash'
 
 import { useSpotifyWebSDK } from '@/helpers/hooks'
 import spotifyApi from '@/helpers/spotify'
@@ -80,6 +81,19 @@ export default function Particles() {
     controlsRef.current.reset()
   }
 
+  const setToDefaultValues = () => {
+    set({
+      size: defaultOptions.size.value,
+      offsetAmplitude: defaultOptions.offsetAmplitude.value,
+      offsetGain: defaultOptions.offsetGain.value,
+      maxDistance: defaultOptions.maxDistance.value,
+      count: defaultOptions.count.value,
+      lightnessOffset: defaultOptions.lightnessOffset.value,
+      offsetHue: defaultOptions.offsetHue.value,
+      OffsetVolume: defaultOptions.OffsetVolume.value,
+    })
+  }
+
   useFrame((state, delta) => {
     if (spotifySync?.current.time && spotifySync && playerState?.paused === false) {
       const features = spotifySync.current?.state.trackFeatures
@@ -95,14 +109,11 @@ export default function Particles() {
 
       // animate time uniform
       pointsRef.current.material.uniforms.time.value =
-        (spotifySync.current?.time / 1000) *
-        spotifySync?.current.volume *
-        features.energy *
-        particleControls.OffsetVolume
+        (spotifySync.current?.time / 1000) * spotifySync?.current.volume * features.energy * OffsetVolume
 
-      console.log({ segment, energy, mode, key, acousticness, tempo, valence })
+      // console.log({ segment, energy, mode, key, acousticness, tempo, valence })
 
-      let targetAmplitude = (60 - Math.abs(loudnessMax)) * 0.01 + particleControls.offsetAmplitude
+      let targetAmplitude = (60 - Math.abs(loudnessMax)) * 0.01 + offsetAmplitude
       let targetFrequency = Math.floor(100 - Math.abs(attack)) / 100
 
       const lerpedAmplitude = lerp(pointsRef.current.material.uniforms.amplitude.value, targetAmplitude, 0.05)
@@ -128,8 +139,7 @@ export default function Particles() {
       const colorEntry = colorMap.find((entry) => entry.note === note && entry.mode === mode)
       const color = colorEntry ? colorEntry.color : '#FFFFFF' // default to white if no color found
 
-      const lightness =
-        100 - Math.max(Math.min(Math.floor(avgLoudness * 1.2 - particleControls.lightnessOffset), 30), 0)
+      const lightness = 100 - Math.max(Math.min(Math.floor(avgLoudness * 1.2 - lightnessOffset), 30), 0)
 
       let startColorTarget = new THREE.Color(color)
       let endColorTarget = new THREE.Color(color)
@@ -193,55 +203,71 @@ export default function Particles() {
     }
   })
 
-  const particleControls = useControls(
-    'Particles',
-    {
-      size: { value: 2.5, min: 0, max: 10, step: 0.1 },
-      offsetAmplitude: { value: 0.7, min: 0, max: 10, step: 0.1 },
-      offsetGain: { value: 0.6, min: 0, max: 10, step: 0.1 },
-      maxDistance: { value: 2.4, min: 0, max: 10, step: 0.1 },
-      count: { value: 500, min: 0, max: 2500, step: 10 },
-      lightnessOffset: { value: 45, min: 0, max: 100, step: 5 },
-      offsetHue: { value: 160, min: 0, max: 360, step: 10 },
-      OffsetVolume: { value: 0.5, min: 0.01, max: 1, step: 0.01 },
-      geometryShape: {
-        options: [
-          'TorusGeometry',
-          'TorusKnotGeometry',
-          'BoxGeometry',
-          'SphereGeometry',
-          'CylinderGeometry',
-          'DancingStrings',
-          'CircleGeometry',
-        ],
-      },
-      // Reset: button(() => {
-      //   pointsRef.current.material.uniforms.startColor.value = new THREE.Color('hsl(320, 100%, 85%)')
-      //   pointsRef.current.material.uniforms.endColor.value = new THREE.Color('hsl(240, 100%, 80%)')
-      //   pointsRef.current.material.uniforms.offsetSize.value = 2
-      //   pointsRef.current.material.uniforms.size.value = 2.5
-      //   pointsRef.current.material.uniforms.frequency.value = 2
-      //   pointsRef.current.material.uniforms.amplitude.value = 1.2
-      //   pointsRef.current.material.uniforms.offsetGain.value = 0.6
-      //   pointsRef.current.material.uniforms.maxDistance.value = 1.6
-      // }),
-      'Reset Camera': button(resetCamera),
+  const defaultOptions = {
+    size: { value: 2.5, min: 0, max: 10, step: 0.1 },
+    offsetAmplitude: { value: 0.7, min: 0, max: 10, step: 0.1 },
+    offsetGain: { value: 0.6, min: 0, max: 10, step: 0.1 },
+    maxDistance: { value: 2.4, min: 0, max: 10, step: 0.1 },
+    count: { value: 500, min: 0, max: 2500, step: 10 },
+    lightnessOffset: { value: 45, min: 0, max: 100, step: 5 },
+    OffsetVolume: { value: 0.5, min: 0.01, max: 1, step: 0.01 },
+    geometryShape: {
+      options: [
+        'TorusGeometry',
+        'TorusKnotGeometry',
+        'BoxGeometry',
+        'SphereGeometry',
+        'CylinderGeometry',
+        'DancingStrings',
+        'CircleGeometry',
+      ],
     },
+    'Set To Default Values': button(setToDefaultValues),
+    'Reset Camera': button(resetCamera),
+  }
+
+  const [
+    {
+      size,
+      offsetAmplitude,
+      offsetGain,
+      maxDistance,
+      count,
+      lightnessOffset,
+      OffsetVolume,
+      geometryShape,
+      startColor,
+      endColor,
+    },
+    set,
+  ] = useControls(
+    'Particles',
+    () => ({
+      size: defaultOptions.size,
+      offsetAmplitude: defaultOptions.offsetAmplitude,
+      offsetGain: defaultOptions.offsetGain,
+      maxDistance: defaultOptions.maxDistance,
+      count: defaultOptions.count,
+      lightnessOffset: defaultOptions.lightnessOffset,
+      OffsetVolume: defaultOptions.OffsetVolume,
+      geometryShape: defaultOptions.geometryShape,
+      'Set To Default Values': defaultOptions['Set To Default Values'],
+      'Reset Camera': defaultOptions['Reset Camera'],
+    }),
     { collapsed: true },
   )
 
   useEffect(() => {
     if (pointsRef.current.material) {
-      pointsRef.current.material.uniforms.startColor.value = new THREE.Color(particleControls.startColor)
-      pointsRef.current.material.uniforms.endColor.value = new THREE.Color(particleControls.endColor)
-      pointsRef.current.material.uniforms.size.value = particleControls.size
-      pointsRef.current.material.uniforms.offsetGain.value = particleControls.offsetGain
-      pointsRef.current.material.uniforms.maxDistance.value = particleControls.maxDistance
+      pointsRef.current.material.uniforms.startColor.value = new THREE.Color(startColor)
+      pointsRef.current.material.uniforms.endColor.value = new THREE.Color(endColor)
+      pointsRef.current.material.uniforms.size.value = size
+      pointsRef.current.material.uniforms.offsetGain.value = offsetGain
+      pointsRef.current.material.uniforms.maxDistance.value = maxDistance
     }
-  }, [particleControls])
+  }, [size, offsetGain, maxDistance, startColor, endColor])
 
   useEffect(() => {
-    // set controls to ref
     controlsRef.current = controls
   }, [controls])
 
@@ -261,34 +287,23 @@ export default function Particles() {
           {
             // return the selected geometry
             (() => {
-              switch (particleControls.geometryShape) {
+              switch (geometryShape) {
                 case 'BoxGeometry':
-                  return (
-                    <boxGeometry
-                      args={[
-                        3,
-                        3,
-                        3,
-                        particleControls.count / 10,
-                        particleControls.count / 10,
-                        particleControls.count / 10,
-                      ]}
-                    />
-                  )
+                  return <boxGeometry args={[3, 3, 3, count / 10, count / 10, count / 10]} />
                 case 'SphereGeometry':
-                  return <sphereGeometry args={[2, particleControls.count, particleControls.count]} />
+                  return <sphereGeometry args={[2, count, count]} />
                 case 'CylinderGeometry':
-                  return <cylinderGeometry args={[2, 2, 8, 32, particleControls.count]} />
+                  return <cylinderGeometry args={[2, 2, 8, 32, count]} />
                 case 'DancingStrings':
-                  return <cylinderGeometry args={[2, 2, 2, 32, particleControls.count]} />
+                  return <cylinderGeometry args={[2, 2, 2, 32, count]} />
                 case 'CircleGeometry':
-                  return <circleGeometry args={[2, particleControls.count]} />
+                  return <circleGeometry args={[2, count]} />
                 case 'TorusGeometry':
-                  return <torusGeometry args={[2, 1, 32, particleControls.count]} />
+                  return <torusGeometry args={[2, 1, 32, count]} />
                 case 'TorusKnotGeometry':
-                  return <torusKnotGeometry args={[10, 3, particleControls.count, 16]} />
+                  return <torusKnotGeometry args={[10, 3, count, 16]} />
                 default:
-                  return <torusGeometry args={[2, 1, 32, particleControls.count]} />
+                  return <torusGeometry args={[2, 1, 32, count]} />
               }
             })()
           }
