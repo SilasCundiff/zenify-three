@@ -49,21 +49,26 @@ export default function Particles() {
 
   useFrame((state, delta) => {
     if (spotifySync?.current.time && spotifySync && playerState?.paused === false) {
-      pointsRef.current.material.uniforms.time.value =
-        (spotifySync.current?.time / 1000) * spotifySync?.current.volume * particleControls.OffsetVolume
+      const features = spotifySync.current?.state.trackFeatures
       const segment = spotifySync.current?.getInterval('segment')
-
       const timbres = segment.timbre
       const pitches = segment.pitches
       const loudnessMax = segment.loudness_max
       const loudnessMaxTime = segment.loudness_max_time
       const loudnessStart = segment.loudness_start
 
-      // console.log({ loudnessMax, loudnessMaxTime, loudnessStart })
-
       const avgLoudness = timbres[0]
       const brightness = timbres[1]
       const attack = timbres[3]
+
+      // animate time uniform
+      pointsRef.current.material.uniforms.time.value =
+        (spotifySync.current?.time / 1000) *
+        spotifySync?.current.volume *
+        features.energy *
+        particleControls.OffsetVolume
+
+      console.log({ segment, features })
 
       let targetAmplitude = (60 - Math.abs(loudnessMax)) * 0.01 + particleControls.offsetAmplitude
       let targetFrequency = Math.floor(100 - Math.abs(attack)) / 100
@@ -189,30 +194,6 @@ export default function Particles() {
 
   useEffect(() => {
     spotifySync.current = new SpotifySync({ spotifyApi, canvasRef: pointsRef.current })
-
-    // spotifySync.current?.on('beat', (beat) => {
-    //   if (pointsRef.current && spotifySync.current.time) {
-    //     const pitchAvg =
-    //       spotifySync.current?.getInterval('segment').pitches.reduce((a, b) => a + b, 0) /
-    //       spotifySync.current?.getInterval('segment').pitches.length
-    //     if (Math.random() < 0.5) {
-    //       gsap.to(pointsRef.current.rotation, {
-    //         duration: beat.duration, // Either a longer or BPM-synced duration
-    //         // y: Math.random() * Math.PI * 2,
-    //         z: Math.random() * Math.PI * pitchAvg * 20,
-    //         ease: 'elastic.out(0.2)',
-    //       })
-    //     }
-    //     if (Math.random() > 0.5) {
-    //       gsap.to(pointsRef.current.rotation, {
-    //         duration: beat.duration, // Either a longer or BPM-synced duration
-    //         // y: Math.random() * Math.PI * 5,
-    //         z: -Math.random() * Math.PI * pitchAvg * 20,
-    //         ease: 'elastic.out(0.2)',
-    //       })
-    //     }
-    //   }
-    // })
 
     return () => {
       spotifySync.current = null
