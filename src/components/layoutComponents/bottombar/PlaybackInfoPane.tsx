@@ -11,7 +11,6 @@ export default function PlaybackInfoPane() {
   const [songData, setSongData] = useState(null)
   const { uiHidden } = useUI()
   const playbackPaneRef = useRef(null)
-  const initialRender = useRef(false)
 
   useEffect(() => {
     if (playerState?.track_window.current_track) {
@@ -21,14 +20,9 @@ export default function PlaybackInfoPane() {
 
   useEffect(() => {
     const node = playbackPaneRef.current
-    if (initialRender.current === true) {
-      return
-    }
+
     // add a gsap animation to slide the playback pane in from the left and fade it in
     gsap.to(node, { x: 0, duration: 0.5, ease: 'power2.out' })
-
-    // set the initial render to true so that the animation doesn't run again
-    initialRender.current = true
 
     // handle the cleanup of the gsap animation
     return () => {
@@ -49,7 +43,7 @@ export default function PlaybackInfoPane() {
       ref={playbackPaneRef}
       className={`${
         uiHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
-      } glass-pane rounded-custom m-2 flex h-24 translate-x-[-400px] items-center space-x-2 overflow-hidden pr-4 transition-opacity duration-500 md:m-0 md:max-w-fit md:space-x-4`}
+      } glass-pane rounded-custom m-2 flex h-24 translate-x-[-200px] items-center space-x-2 overflow-hidden pr-4 transition-opacity duration-500 md:m-0 md:max-w-fit md:space-x-4`}
     >
       {songData && (
         <>
