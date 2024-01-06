@@ -65,17 +65,20 @@ const colorMap = [
 extend({ ParticleMaterial })
 
 export default function Particles() {
-  // const { analysis, features } = useSpotifySongAnalysis()
-  // const accessToken = spotifyApi.getAccessToken()
   const { playerState } = useSpotifyWebSDK()
   const controls = useThree((state) => state.controls)
 
-  // console.dir({ analysis, features }, { depth: null, colors: true })
   const controlsRef = useRef()
   const particleRef = useRef()
   const pointsRef = useRef()
   const spotifySync = useRef()
   const timeRef = useRef(0)
+
+  const resetCamera = () => {
+    if (!controlsRef.current) return
+    controlsRef.current.target.set(0, 0, 0)
+    controlsRef.current.reset()
+  }
 
   useFrame((state, delta) => {
     if (spotifySync?.current.time && spotifySync && playerState?.paused === false) {
@@ -193,14 +196,10 @@ export default function Particles() {
   const particleControls = useControls(
     'Particles',
     {
-      offsetSize: { value: 2, min: 0, max: 10, step: 0.1 },
       size: { value: 2.5, min: 0, max: 10, step: 0.1 },
-      // frequency: { value: 2, min: 0, max: 10, step: 0.1 },
       offsetAmplitude: { value: 0.7, min: 0, max: 10, step: 0.1 },
       offsetGain: { value: 0.6, min: 0, max: 10, step: 0.1 },
       maxDistance: { value: 2.4, min: 0, max: 10, step: 0.1 },
-      // startColor: new THREE.Color('hsl(320, 100%, 85%)'), // red
-      // endColor: new THREE.Color('hsl(240, 100%, 80%)'), // blue
       count: { value: 500, min: 0, max: 2500, step: 10 },
       lightnessOffset: { value: 45, min: 0, max: 100, step: 5 },
       offsetHue: { value: 160, min: 0, max: 360, step: 10 },
@@ -226,9 +225,7 @@ export default function Particles() {
       //   pointsRef.current.material.uniforms.offsetGain.value = 0.6
       //   pointsRef.current.material.uniforms.maxDistance.value = 1.6
       // }),
-      // 'Reset Camera': button(() => {
-      //   if (controls) controlsRef.current.reset()
-      // }),
+      'Reset Camera': button(resetCamera),
     },
     { collapsed: true },
   )
@@ -237,19 +234,16 @@ export default function Particles() {
     if (pointsRef.current.material) {
       pointsRef.current.material.uniforms.startColor.value = new THREE.Color(particleControls.startColor)
       pointsRef.current.material.uniforms.endColor.value = new THREE.Color(particleControls.endColor)
-      pointsRef.current.material.uniforms.offsetSize.value = particleControls.uOffsetSize
       pointsRef.current.material.uniforms.size.value = particleControls.size
-      // pointsRef.current.material.uniforms.frequency.value = particleControls.frequency
-      // pointsRef.current.material.uniforms.amplitude.value = particleControls.amplitude
       pointsRef.current.material.uniforms.offsetGain.value = particleControls.offsetGain
       pointsRef.current.material.uniforms.maxDistance.value = particleControls.maxDistance
     }
   }, [particleControls])
 
-  // useEffect(() => {
-  //   // set controls to ref
-  //   controlsRef.current = controls
-  // }, [controls])
+  useEffect(() => {
+    // set controls to ref
+    controlsRef.current = controls
+  }, [controls])
 
   useEffect(() => {
     spotifySync.current = new SpotifySync({ spotifyApi, canvasRef: pointsRef.current })
