@@ -97,6 +97,8 @@ const Player = () => {
     }
   }, [volume, debouncedVolumeChange])
 
+  console.log(playerState, player)
+
   if (!playerState || playerState.loading) {
     return (
       <div className='glass-pane md:rounded-custom mx-auto flex h-24 min-h-24 w-full max-w-lg shrink-0 rounded-none p-2 text-xs md:text-base'>
@@ -138,7 +140,11 @@ const Player = () => {
           )}
         </div>
         <div className='col-start-2 flex items-center justify-center space-x-4  md:space-x-8 md:px-2'>
-          <FontAwesomeIcon icon={faShuffle} className='button h-4 w-4 md:h-5 md:w-5' onClick={toggleShuffle} />
+          <FontAwesomeIcon
+            icon={faShuffle}
+            className={`button h-4 w-4 md:h-5 md:w-5 ${playerState?.shuffle ? 'text-sky-500' : ''}`}
+            onClick={toggleShuffle}
+          />
           <div className='flex items-center  justify-center space-x-2 md:space-x-4'>
             <FontAwesomeIcon
               icon={faBackwardStep}
@@ -165,7 +171,12 @@ const Player = () => {
               onClick={() => player.nextTrack()}
             />
           </div>
-          <FontAwesomeIcon icon={faRepeat} className='button h-4 w-4 md:h-5 md:w-5' onClick={toggleRepeat} />
+          <span className={`button relative ${playerState?.repeat_mode !== 0 ? 'text-sky-500' : ''}`}>
+            <FontAwesomeIcon icon={faRepeat} className={`h-4 w-4 md:h-5 md:w-5 `} onClick={toggleRepeat} />
+            <span className={`absolute -right-1 top-1 text-sm font-black text-sky-500`}>
+              {playerState?.repeat_mode === 2 ? '1' : null}
+            </span>
+          </span>
         </div>
         <div className='mr-1 flex items-center justify-end space-x-2'>
           {volume > 50 && <FontAwesomeIcon icon={faVolumeHigh} className='button h-4 w-4' onClick={handleMuteVolume} />}
