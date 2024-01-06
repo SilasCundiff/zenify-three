@@ -18,3 +18,11 @@ JWT_SECRET={hashed value to use as a jwt secret}
 Credits for some of the code and inspirations:
 [tympanus.net](https://tympanus.net/codrops/2023/12/19/creating-audio-reactive-visuals-with-dynamic-particles-in-three-js/)
 [spotify-viz](https://github.com/zachwinter/spotify-viz)
+
+TODO:
+
+- [] Improve UI player elements
+- [] Fix Refresh Token
+- [] Add instructions for activating a spotify session if player takes too long to load
+- [] improve image loading placeholders
+- [] add buttons to hide the ui outside of the player, as well as independently hide just the center content

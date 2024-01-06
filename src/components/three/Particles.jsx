@@ -28,6 +28,40 @@ const ParticleMaterial = shaderMaterial(
   fragment,
 )
 
+// mode: 0 = minor, 1 = major
+// this color map is based on the concept of Chromesthesia or sound-to-color synesthesia
+// the association of a color with a musical note
+// references:
+// https://en.wikipedia.org/wiki/Chromesthesia
+// https://www.chrisatthepiano.com/post/a-mapping-between-musical-notes-and-colours
+
+const colorMap = [
+  { mode: 1, note: 'C', color: '#007FFF' }, // C Major - azure
+  { mode: 0, note: 'A', color: '#40E0D0' }, // A Minor - turquoise
+  { mode: 1, note: 'G', color: '#008000' }, // G Major - green
+  { mode: 0, note: 'E', color: '#013220' }, // E Minor - dark, pine green
+  { mode: 1, note: 'D', color: '#FFFF00' }, // D Major - yellow
+  { mode: 0, note: 'B', color: '#9B870C' }, // B Minor - dark yellow
+  { mode: 1, note: 'A', color: '#FFA500' }, // A Major - orange
+  { mode: 0, note: 'F#', color: '#800080' }, // F# Minor - purple
+  { mode: 1, note: 'E', color: '#FFA500' }, // E Major - orange
+  { mode: 0, note: 'C#', color: '#FF8C00' }, // C# Minor - dark orange
+  { mode: 1, note: 'B', color: '#800080' }, // B Major - purple
+  { mode: 0, note: 'G#', color: '#654321' }, // G# Minor - dark brown
+  { mode: 1, note: 'F#', color: '#FFC0CB' }, // Gb Major - pink
+  { mode: 0, note: 'D#', color: '#D2B48C' }, // D# Minor - light brown
+  { mode: 1, note: 'C#', color: '#E34234' }, // Db Major - vermilion red
+  { mode: 0, note: 'A#', color: '#000000' }, // Bb Minor - black
+  { mode: 1, note: 'G#', color: '#DC143C' }, // Ab Major - crimson red
+  { mode: 0, note: 'F', color: '#800000' }, // F Minor - maroon
+  { mode: 1, note: 'D#', color: '#120A8F' }, // Eb Major - ultramarine blue
+  { mode: 0, note: 'C', color: '#808080' }, // C Minor - gray
+  { mode: 1, note: 'A#', color: '#008000' }, // Bb Major - green
+  { mode: 0, note: 'G', color: '#ADD8E6' }, // G Minor - light blue
+  { mode: 1, note: 'F', color: '#FF2400' }, // F Major - scarlet red
+  { mode: 0, note: 'D', color: '#E0B0FF' }, // D Minor - mauve
+]
+
 extend({ ParticleMaterial })
 
 export default function Particles() {
@@ -50,10 +84,7 @@ export default function Particles() {
 
       const segment = spotifySync.current?.getInterval('segment')
       const timbres = segment.timbre
-      const pitches = segment.pitches
       const loudnessMax = segment.loudness_max
-      const loudnessMaxTime = segment.loudness_max_time
-      const loudnessStart = segment.loudness_start
 
       const avgLoudness = timbres[0]
       const brightness = timbres[1]
@@ -77,30 +108,43 @@ export default function Particles() {
       pointsRef.current.material.uniforms.amplitude.value = lerpedAmplitude
       pointsRef.current.material.uniforms.frequency.value = lerpedFrequency
 
-      // const minTimbre = 0
-      // const maxTimbre = 1
+      // pitches in order: C, C#, D, D#, E, F, F#, G, G#, A, A#, B
+      // pitches at index: 0, 1, 2, 3, 4, 5, 6, 7, 8,  9, 10, 11
+      // pitches are on a scale from 0 to 1, with 1 being the most intense
+      // each pitch is associated with a note, which is associated with a color, the color map is above outside of the component
+      const pitches = segment.pitches
 
-      // const normalizedTimbre = Math.abs((timbreAvg - minTimbre) / (maxTimbre - minTimbre))
-      // const hue = normalizedTimbre * 36
-      const hue1 = Math.abs(brightness) * (Math.PI * 2) + particleControls.offsetHue
-      const hue2 = Math.abs(brightness) + Math.abs(attack) + Math.PI * 2 + particleControls.offsetHue
+      // Find the index of the most intense pitch
+      const maxPitchIndex = pitches.reduce((iMax, x, i, arr) => (x > arr[iMax] ? i : iMax), 0)
+
+      // Map the index to a note
+      const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+      const note = notes[maxPitchIndex]
+
+      // Find the color for the note and mode from the colorMap
+      const colorEntry = colorMap.find((entry) => entry.note === note && entry.mode === mode)
+      const color = colorEntry ? colorEntry.color : '#FFFFFF' // default to white if no color found
+
       const lightness =
         100 - Math.max(Math.min(Math.floor(avgLoudness * 1.2 - particleControls.lightnessOffset), 30), 0)
-      // console.log({ hue1, hue2, lightness })
 
-      // const startColor = new THREE.Color('hsl(' + hue1 + `, 100%, ${Math.floor(lightness)}%)`)
-      const startColor = new THREE.Color('hsl(' + hue1 + `, 75%, ${Math.floor(lightness)}%)`)
-      const endColor = new THREE.Color('hsl(' + hue2 + `, 75%, ${Math.floor(lightness)}%)`)
-      console.log({ startColor, endColor, hue1, hue2 })
+      let startColorTarget = new THREE.Color(color)
+      let endColorTarget = new THREE.Color(color)
 
-      // console.log({ startColor, endColor, hue1, hue2 })
+      // Adjust the lightness and saturation of the color based on the loudness
+      let hsl = startColorTarget.getHSL({ h: 0, s: 0, l: 0 })
+      hsl.l = Math.max(hsl.l, lightness / 100)
+      hsl.s = Math.min(hsl.s + 0.1, 1)
+      startColorTarget.setHSL(hsl.h, hsl.s, hsl.l)
 
-      // const startColor = new THREE.Color('hsl(' + hue1 + `, 100%, 50%})`)
-      // const endColor = new THREE.Color('hsl(' + hue2 + `, 100%, 50%)`)
+      hsl = endColorTarget.getHSL({ h: 0, s: 0, l: 0 })
+      // shift the hue by 120 degrees
+      hsl.h += 0.33
+      hsl.l = Math.max(hsl.l, lightness / 100)
+      hsl.s = Math.min(hsl.s + 0.1, 1)
+      endColorTarget.setHSL(hsl.h, hsl.s, hsl.l)
+
       // Animate the start color
-      let startColorTarget = { r: startColor.r, g: startColor.g, b: startColor.b }
-      let endColorTarget = { r: endColor.r, g: endColor.g, b: endColor.b }
-
       pointsRef.current.material.uniforms.startColor.value.r = lerp(
         pointsRef.current.material.uniforms.startColor.value.r,
         startColorTarget.r,
@@ -118,6 +162,7 @@ export default function Particles() {
       )
       pointsRef.current.material.uniforms.startColor.needsUpdate = true
 
+      // Animate the end color
       pointsRef.current.material.uniforms.endColor.value.r = lerp(
         pointsRef.current.material.uniforms.endColor.value.r,
         endColorTarget.r,
@@ -134,27 +179,6 @@ export default function Particles() {
         0.05,
       )
       pointsRef.current.material.uniforms.endColor.needsUpdate = true
-
-      // gsap.to(pointsRef.current.material.uniforms.startColor.value, {
-      //   r: startColor.r,
-      //   g: startColor.g,
-      //   b: startColor.b,
-      //   duration: 0.5, // Adjust the duration to make the transition slower or faster
-      //   onUpdate: () => {
-      //     pointsRef.current.material.uniforms.startColor.needsUpdate = true
-      //   },
-      // })
-
-      // // Animate the end color
-      // gsap.to(pointsRef.current.material.uniforms.endColor.value, {
-      //   r: endColor.r,
-      //   g: endColor.g,
-      //   b: endColor.b,
-      //   duration: 0.5, // Adjust the duration to make the transition slower or faster
-      //   onUpdate: () => {
-      //     pointsRef.current.material.uniforms.endColor.needsUpdate = true
-      //   },
-      // })
     } else {
       pointsRef.current.material.uniforms.time.value += delta
       const startColor = new THREE.Color('hsl(320, 50%, 85%)')
