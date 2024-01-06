@@ -15,10 +15,11 @@ const ListItem = ({ playlistId, playlistTitle, playlistImageUrl, order }) => {
   }
 
   useEffect(() => {
-    gsap.to(itemRef.current, { autoAlpha: 1, delay: (order * 0.5) / 15, duration: 0.5, ease: 'power2.in' })
+    const node = itemRef.current
+    gsap.to(node, { autoAlpha: 1, delay: (order * 0.5) / 15, duration: 0.5, ease: 'power2.in' })
 
     return () => {
-      gsap.to(itemRef.current, { autoAlpha: 0, delay: (order * 0.5) / 15, duration: 0.5, ease: 'power2.out' })
+      gsap.to(node, { autoAlpha: 0, delay: (order * 0.5) / 15, duration: 0.5, ease: 'power2.out' })
     }
   }, [order])
 

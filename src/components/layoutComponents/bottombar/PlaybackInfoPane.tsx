@@ -20,18 +20,19 @@ export default function PlaybackInfoPane() {
   }, [playerState])
 
   useEffect(() => {
+    const node = playbackPaneRef.current
     if (initialRender.current === true) {
       return
     }
     // add a gsap animation to slide the playback pane in from the left and fade it in
-    gsap.to(playbackPaneRef.current, { x: 0, duration: 0.5, ease: 'power2.out' })
+    gsap.to(node, { x: 0, duration: 0.5, ease: 'power2.out' })
 
     // set the initial render to true so that the animation doesn't run again
     initialRender.current = true
 
     // handle the cleanup of the gsap animation
     return () => {
-      gsap.to(playbackPaneRef.current, { x: 0, duration: 0.5, ease: 'power2.in' })
+      gsap.to(node, { x: 0, duration: 0.5, ease: 'power2.in' })
     }
   }, [songData])
 

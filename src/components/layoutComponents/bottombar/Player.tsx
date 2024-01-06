@@ -141,10 +141,11 @@ const Player = () => {
 
   // gsap animation to slide the player in from the bottom
   useEffect(() => {
-    gsap.to(playerRef.current, { y: 0, duration: 1.5, ease: 'power2.out' })
+    const node = playerRef.current
+    gsap.to(node, { y: 0, duration: 1.5, ease: 'power2.out' })
 
     return () => {
-      gsap.to(playerRef.current, { y: 100, duration: 0.5, ease: 'power2.in' })
+      gsap.to(node, { y: 100, duration: 0.5, ease: 'power2.in' })
     }
   }, [])
 

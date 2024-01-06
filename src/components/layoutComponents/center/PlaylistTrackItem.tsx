@@ -10,18 +10,11 @@ const PlaylistTrackItem = ({ track, order }) => {
   const itemRef = useRef(null)
 
   useEffect(() => {
-    gsap.fromTo(
-      itemRef.current,
-      { autoAlpha: 0, y: 100 },
-      { autoAlpha: 1, y: 0, delay: (order * 0.25) / 5, duration: 0.5 },
-    )
+    const node = itemRef.current
+    gsap.fromTo(node, { autoAlpha: 0, y: 100 }, { autoAlpha: 1, y: 0, delay: (order * 0.25) / 5, duration: 0.5 })
 
     return () => {
-      gsap.fromTo(
-        itemRef.current,
-        { autoAlpha: 1, y: 0 },
-        { autoAlpha: 0, y: 100, delay: (order * 0.25) / 5, duration: 0.5 },
-      )
+      gsap.fromTo(node, { autoAlpha: 1, y: 0 }, { autoAlpha: 0, y: 100, delay: (order * 0.25) / 5, duration: 0.5 })
     }
   }, [order])
 

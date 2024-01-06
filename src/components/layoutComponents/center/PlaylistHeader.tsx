@@ -9,10 +9,11 @@ const PlaylistHeader = ({ playlistData }) => {
   const headerRef = useRef(null)
 
   useEffect(() => {
-    gsap.to(headerRef.current, { autoAlpha: 1, duration: 0.5, ease: 'power2.in' })
+    const node = headerRef.current
+    gsap.to(node, { autoAlpha: 1, duration: 0.5, ease: 'power2.in' })
 
     return () => {
-      gsap.to(headerRef.current, { autoAlpha: 0, duration: 0.5, ease: 'power2.out' })
+      gsap.to(node, { autoAlpha: 0, duration: 0.5, ease: 'power2.out' })
     }
   }, [])
 
