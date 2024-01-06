@@ -50,7 +50,7 @@ export default function Particles() {
   useFrame((state, delta) => {
     if (spotifySync?.current.time && spotifySync && playerState?.paused === false) {
       pointsRef.current.material.uniforms.time.value =
-        (spotifySync.current?.time / 1000) * spotifySync?.current.volume * 0.5
+        (spotifySync.current?.time / 1000) * spotifySync?.current.volume * particleControls.OffsetVolume
       const segment = spotifySync.current?.getInterval('segment')
 
       const timbres = segment.timbre
@@ -140,6 +140,7 @@ export default function Particles() {
       count: { value: 500, min: 0, max: 2500, step: 10 },
       lightnessOffset: { value: 45, min: 0, max: 100, step: 5 },
       offsetHue: { value: 160, min: 0, max: 360, step: 10 },
+      OffsetVolume: { value: 0.5, min: 0.01, max: 1, step: 0.01 },
       geometryShape: {
         options: [
           'TorusGeometry',
