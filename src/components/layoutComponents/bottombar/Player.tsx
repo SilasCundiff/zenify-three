@@ -23,6 +23,7 @@ import gsap from 'gsap'
 import ProgressBar from './ProgressBar'
 import { useUI } from '@/helpers/hooks/useUI'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { useMouseMovement } from '@/helpers/hooks/useMouseMovement'
 
 const Player = () => {
   const { player, playerState } = useSpotifyWebSDK()
@@ -32,6 +33,7 @@ const Player = () => {
   const [volume, setVolume] = useState(1)
   const prevVolumeRef = useRef(1)
   const playerRef = useRef(null)
+  const mouseMoved = useMouseMovement()
 
   const handleVolumeChange = (value) => {
     setVolume(value)
@@ -186,7 +188,7 @@ const Player = () => {
     <div
       ref={playerRef}
       className={`${
-        uiHidden ? 'opacity-10' : 'opacity-100'
+        uiHidden ? (mouseMoved ? 'opacity-25' : 'opacity-10 md:opacity-0') : 'opacity-100'
       } glass-pane md:rounded-custom mx-auto h-24 w-full max-w-lg rounded-none p-2 text-xs transition-opacity duration-500 hover:opacity-100 md:text-base`}
     >
       {playerState && !playerState.loading && <ProgressBar playerState={playerState} player={player} />}

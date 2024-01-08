@@ -89,7 +89,6 @@ export default function Particles() {
       maxDistance: defaultOptions.maxDistance.value,
       count: defaultOptions.count.value,
       lightnessOffset: defaultOptions.lightnessOffset.value,
-      offsetHue: defaultOptions.offsetHue.value,
       OffsetVolume: defaultOptions.OffsetVolume.value,
     })
   }
