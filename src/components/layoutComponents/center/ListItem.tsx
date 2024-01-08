@@ -1,7 +1,6 @@
 'use client'
 import { useSelectedPlaylistStore } from '@/helpers/hooks'
 import gsap from 'gsap'
-import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
 const ListItem = ({ playlistId, playlistTitle, playlistImageUrl, order }) => {

@@ -51,8 +51,8 @@ export default function PlaybackInfoPane() {
             className='rounded-custom h-24 w-24 rounded-r-none md:inline'
             src={songData.album && songData?.album.images?.[0]?.url}
             alt='album cover'
-            height={64}
-            width={64}
+            height={320}
+            width={320}
           />
           <div className='overflow-hidden text-nowrap'>
             <h3 className='text-md truncate font-bold text-pink-50 md:text-xl'>{songData?.name}</h3>

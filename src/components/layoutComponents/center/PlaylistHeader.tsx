@@ -24,8 +24,8 @@ const PlaylistHeader = ({ playlistData }) => {
           src={imgSrc ? imgSrc : '/img/album-placeholder-64.png'}
           className='rounded-custom h-16 w-16 md:h-20 md:w-20'
           alt='playlist cover'
-          height={80}
-          width={80}
+          height={320}
+          width={320}
           placeholder='blur'
           blurDataURL={'/img/album-placeholder-64.png'}
           onError={() => {

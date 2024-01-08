@@ -34,8 +34,8 @@ const PlaylistTrackItem = ({ track, order }) => {
           src={imgSrc ? imgSrc : '/img/album-placeholder-64.png'}
           className='rounded-custom h-10 w-10'
           alt='album cover'
-          height={40}
-          width={40}
+          height={64}
+          width={64}
           placeholder='blur'
           blurDataURL={'/img/album-placeholder-64.png'}
           onError={() => {
