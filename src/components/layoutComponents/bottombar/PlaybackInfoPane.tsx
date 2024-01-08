@@ -55,9 +55,9 @@ export default function PlaybackInfoPane() {
             width={64}
           />
           <div className='overflow-hidden text-nowrap'>
-            <h3 className='text-md truncate font-bold text-gray-50 md:text-xl'>{songData?.name}</h3>
-            <p className='text-md truncate text-gray-50 md:text-xl'>{songData?.artists?.[0]?.name}</p>
-            <p className='md:text-md text-sm text-gray-300 md:inline'>{songData?.album?.name}</p>
+            <h3 className='text-md truncate font-bold text-pink-50 md:text-xl'>{songData?.name}</h3>
+            <p className='text-md truncate text-pink-50 md:text-xl'>{songData?.artists?.[0]?.name}</p>
+            <p className='md:text-md text-sm text-pink-200 md:inline'>{songData?.album?.name}</p>
           </div>
         </>
       )}

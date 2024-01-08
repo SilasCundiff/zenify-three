@@ -18,13 +18,13 @@ export default function SearchInput() {
   }
 
   return (
-    <div className='rounded-custom relative w-full text-black md:mx-auto md:max-w-lg'>
+    <div className='rounded-custom relative w-full text-slate-900 md:mx-auto md:max-w-lg'>
       <form
         onSubmit={(e) => handleSubmit(e)}
-        className='rounded-custom relative bg-slate-50 font-semibold ring-2 ring-slate-50 ring-offset-0 focus-within:outline-none focus-within:ring-2 focus-within:ring-sky-500 focus-within:ring-offset-2'
+        className='rounded-custom relative bg-pink-50 font-semibold ring-2 ring-pink-50 ring-offset-0 focus-within:outline-none focus-within:ring-2 focus-within:ring-pink-300 focus-within:ring-offset-2'
       >
         <input
-          className='rounded-custom w-full bg-transparent px-4 py-2 text-black focus:outline-none focus:ring-0 focus:ring-transparent focus:ring-offset-0'
+          className='rounded-custom w-full bg-transparent px-4 py-2 text-slate-900 focus:outline-none focus:ring-0 focus:ring-transparent focus:ring-offset-0'
           type='text'
           name='search'
           id='search'
@@ -35,7 +35,7 @@ export default function SearchInput() {
         />
         <button
           type='submit'
-          className='rounded-custom absolute right-[-2px] top-[50%] z-0 mr-0.5 flex translate-y-[-50%] items-center justify-center rounded-l-none   p-2 text-gray-500 hover:bg-gray-600 hover:text-gray-100'
+          className='rounded-custom absolute right-[-2px] top-[50%] z-0 mr-0.5 flex translate-y-[-50%] items-center justify-center rounded-l-none   p-2 text-slate-900 hover:bg-pink-300 hover:text-white'
         >
           <FontAwesomeIcon className='h-6 w-6' icon={faSearch} />
         </button>

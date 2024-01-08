@@ -158,10 +158,10 @@ const Player = () => {
         <p className='m-auto flex flex-col text-center text-sm'>
           <span className='ml-4'>You need to have an active Spotify session to use this feature!</span>
           <span className='ml-4'>
-            Please <span className='text-sky-300'>open spotify</span> on any device and start a song,
+            Please <span className='text-pink-300'>open spotify</span> on any device and start a song,
           </span>
           <span className='ml-4'>
-            then come back here and <span className='text-sky-300'>refresh the page</span>!
+            then come back here and <span className='text-pink-300'>refresh the page</span>!
           </span>
         </p>
       </div>
@@ -215,7 +215,9 @@ const Player = () => {
           )}
           {
             <button
-              className='button h-8 w-8 md:h-8 md:w-8'
+              className={`${
+                uiHidden ? 'invisible opacity-0' : 'visible opacity-100'
+              } button h-8 w-8 transition-all duration-500 md:h-8 md:w-8`}
               onClick={handleHideCenterContent}
               title='Hide Center Display'
             >
@@ -226,7 +228,7 @@ const Player = () => {
         <div className='col-start-2 flex items-center justify-center space-x-4  md:space-x-8 md:px-2'>
           <FontAwesomeIcon
             icon={faShuffle}
-            className={`button h-4 w-4 md:h-5 md:w-5 ${playerState?.shuffle ? 'text-sky-500' : ''}`}
+            className={`button h-4 w-4 md:h-5 md:w-5 ${playerState?.shuffle ? 'text-pink-300' : ''}`}
             onClick={toggleShuffle}
           />
           <div className='flex items-center  justify-center space-x-2 md:space-x-4'>
@@ -251,9 +253,9 @@ const Player = () => {
             )}
             <FontAwesomeIcon icon={faForwardStep} className='button h-6 w-6 md:h-7 md:w-7' onClick={handleNextTrack} />
           </div>
-          <span className={`button relative ${playerState?.repeat_mode !== 0 ? 'text-sky-500' : ''}`}>
+          <span className={`button relative ${playerState?.repeat_mode !== 0 ? 'text-pink-300' : ''}`}>
             <FontAwesomeIcon icon={faRepeat} className={`h-4 w-4 md:h-5 md:w-5 `} onClick={toggleRepeat} />
-            <span className={`absolute -right-1 top-1 text-sm font-black text-sky-500`}>
+            <span className={`absolute -right-1 top-1 text-sm font-black text-pink-300`}>
               {playerState?.repeat_mode === 2 ? '1' : null}
             </span>
           </span>

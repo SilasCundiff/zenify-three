@@ -69,7 +69,7 @@ function CenterContent() {
         } flex h-full flex-1 p-2 transition-opacity duration-500 md:p-4`}
       >
         <div className='content-wrapper__inner rounded-custom no-scrollbar glass-pane container m-auto flex flex-col overflow-y-auto p-4 md:max-h-[calc(100svh-232px)]'>
-          <button className='mb-4 ml-0 mr-2 self-start hover:text-gray-300' onClick={handleClearSearchResults}>
+          <button className='mb-4 ml-0 mr-2 self-start hover:text-pink-100' onClick={handleClearSearchResults}>
             <span className='ml-2 mr-1'>
               <FontAwesomeIcon icon={faXmark} />
             </span>{' '}

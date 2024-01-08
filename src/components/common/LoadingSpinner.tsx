@@ -13,7 +13,7 @@ export default function LoadingSpinner({ size = 'medium' }: LoadingSpinnerProps)
   }
 
   return (
-    <span className={`flex justify-center text-center font-bold text-green-100 ${sizeClasses[size]}`}>
+    <span className={`flex justify-center text-center font-bold text-pink-100 ${sizeClasses[size]}`}>
       <span className='flex animate-spin items-center justify-center  transition-transform ease-in-out'>
         <FontAwesomeIcon icon={faSpinner} />
       </span>

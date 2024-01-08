@@ -26,7 +26,7 @@ const ListItem = ({ playlistId, playlistTitle, playlistImageUrl, order }) => {
   return (
     <li
       ref={itemRef}
-      className='rounded-custom flex min-w-16 max-w-16 cursor-pointer flex-col whitespace-nowrap rounded-b-none align-middle  text-sm font-bold opacity-0 duration-200 will-change-transform hover:scale-110 hover:text-gray-300 md:min-w-48 md:max-w-48 md:text-lg'
+      className='rounded-custom flex min-w-16 max-w-16 cursor-pointer flex-col whitespace-nowrap rounded-b-none align-middle  text-sm font-bold opacity-0 duration-200 will-change-transform hover:scale-105 hover:text-pink-200 md:min-w-48 md:max-w-48 md:text-lg'
       onClick={handleSelectPlaylist}
     >
       {playlistImageUrl ? (

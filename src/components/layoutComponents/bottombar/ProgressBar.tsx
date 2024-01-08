@@ -63,7 +63,7 @@ export default function ProgressBar({ playerState, player }) {
 
   return (
     <div className='scrubber mt-2'>
-      <div className='scrubber-time flex items-center justify-between text-sm text-gray-300'>
+      <div className='scrubber-time flex items-center justify-between text-sm text-pink-100'>
         <span className='min-w-8 shrink-0 text-center'>{formatTime(getStatePosition())}</span>
         <input
           type='range'

@@ -43,7 +43,7 @@ const PlaylistTrackItem = ({ track, order }) => {
           }}
         />
         <div className=''>
-          <p className='w-36 truncate text-green-50'>{name}</p>
+          <p className='w-36 truncate text-pink-50'>{name}</p>
           <p className='w-40'>{artists[0].name}</p>
         </div>
       </div>

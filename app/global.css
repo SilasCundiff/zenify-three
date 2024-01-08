@@ -47,7 +47,7 @@ body {
 }
 
 .canvas {
-  @apply w-full h-svh bg-gradient-to-b from-black to-zinc-900;
+  @apply w-full h-svh bg-gradient-to-b from-black to-slate-900;
   position: fixed !important;
   inset: 0;
   z-index: 0;
@@ -72,7 +72,7 @@ input[type='range'].scrubber-progress::-webkit-slider-runnable-track {
 input[type='range'].scrubber-progress::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  @apply bg-sky-500 h-2 w-2 rounded-full;
+  @apply bg-pink-400 h-2 w-2 rounded-full;
 
   /* height: 1rem;
   width: 1rem;
@@ -80,8 +80,8 @@ input[type='range'].scrubber-progress::-webkit-slider-thumb {
 }
 
 input[type='range'].scrubber-progress:focus::-webkit-slider-thumb {
-  @apply border border-sky-500;
-  @apply outline-none ring-4 ring-sky-500;
+  @apply border border-pink-400;
+  @apply outline-none ring-4 ring-pink-400;
 }
 
 input[type='range'].scrubber-progress::-moz-range-track {
@@ -91,13 +91,13 @@ input[type='range'].scrubber-progress::-moz-range-track {
 }
 
 input[type='range'].scrubber-progress::-moz-range-thumb {
-  @apply border border-sky-500;
-  @apply outline-none ring-4 ring-sky-500;
+  @apply border border-pink-400;
+  @apply outline-none ring-4 ring-pink-400;
 }
 
 input[type='range'].scrubber-progress:focus::-moz-range-thumb {
   border: none;
-  @apply bg-sky-800;
+  @apply bg-pink-400;
   @apply h-2 w-2;
   @apply rounded-full;
 }
@@ -126,14 +126,14 @@ input[type='range'].volume-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
 
-  @apply bg-sky-800;
+  @apply bg-pink-400;
   @apply h-2 w-2;
   @apply rounded-full;
 }
 
 input[type='range'].volume-slider:focus::-webkit-slider-thumb {
-  @apply border border-sky-500;
-  @apply outline-none ring-4 ring-sky-500;
+  @apply border border-pink-400;
+  @apply outline-none ring-4 ring-pink-400;
 }
 
 input[type='range'].volume-slider::-moz-range-track {
@@ -144,12 +144,12 @@ input[type='range'].volume-slider::-moz-range-track {
 
 input[type='range'].volume-slider::-moz-range-thumb {
   border: none;
-  @apply bg-sky-800;
+  @apply bg-pink-400;
   @apply h-2 w-2;
   @apply rounded-full;
 }
 
 input[type='range'].volume-slider:focus::-moz-range-thumb {
-  @apply border border-sky-500;
-  @apply outline-none ring-4 ring-sky-500;
+  @apply border border-pink-400;
+  @apply outline-none ring-4 ring-pink-400;
 }
