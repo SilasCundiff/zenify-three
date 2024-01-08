@@ -4,7 +4,7 @@ import { signIn } from 'next-auth/react'
 export default function LoginButton() {
   return (
     <button
-      className='mb-2 mr-3 w-48 rounded-full bg-sky-800  px-4 py-3 font-semibold text-black'
+      className='rounded-custom mb-2 mr-3 bg-pink-300 px-4 py-2 font-semibold text-black transition-colors duration-300 ease-in-out hover:bg-pink-100'
       onClick={() => signIn('spotify', { callbackUrl: '/' })}
     >
       Login with Spotify

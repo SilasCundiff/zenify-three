@@ -22,8 +22,8 @@ const ParticleMaterial = shaderMaterial(
     amplitude: 1.4,
     offsetGain: 0.5,
     maxDistance: 1.6,
-    startColor: new THREE.Color('hsl(320, 100%, 85%)'), // red
-    endColor: new THREE.Color('hsl(240, 100%, 80%)'), // blue
+    startColor: new THREE.Color('hsl(320, 100%, 100%)'), // red
+    endColor: new THREE.Color('hsl(320, 100%, 85%)'), // blue
   },
   vertex,
   fragment,
@@ -195,8 +195,8 @@ export default function Particles() {
       pointsRef.current.material.uniforms.endColor.needsUpdate = true
     } else {
       pointsRef.current.material.uniforms.time.value += delta
-      const startColor = new THREE.Color('hsl(320, 50%, 85%)')
-      const endColor = new THREE.Color('hsl(240, 50%, 80%)')
+      const startColor = new THREE.Color('hsl(320, 50%, 100%)')
+      const endColor = new THREE.Color('hsl(320, 100%, 85%)')
       pointsRef.current.material.uniforms.startColor.value = startColor
       pointsRef.current.material.uniforms.endColor.value = endColor
       // pointsRef.current.material.uniforms.size.value = 4.5

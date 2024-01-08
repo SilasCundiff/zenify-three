@@ -34,8 +34,10 @@ const PlaylistHeader = ({ playlistData }) => {
         />
       </div>
       <div className=''>
-        <p className='mb-1 ml-2 text-xl font-bold text-white md:text-2xl'>{description ? description : 'Playlist:'}</p>
-        <h1 className='mb-2 ml-2 text-3xl font-bold text-white md:text-5xl'>{name}</h1>
+        <p className='mb-1 ml-2 text-xl font-bold text-pink-50 md:text-2xl'>
+          {description ? description : 'Playlist:'}
+        </p>
+        <h1 className='mb-2 ml-2 text-3xl font-bold text-pink-50 md:text-5xl'>{name}</h1>
       </div>
     </div>
   )

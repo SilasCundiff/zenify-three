@@ -9,7 +9,7 @@ interface PageWrapperProps {
 const PageWrapper: FunctionComponent<PageWrapperProps> = ({ children }) => {
   const { uiHidden } = useUI()
   return (
-    <div className={`${uiHidden && 'pointer-events-none'} fixed inset-0 z-10 flex h-svh flex-col text-white`}>
+    <div className={`${uiHidden && 'pointer-events-none'} fixed inset-0 z-10 flex h-svh flex-col text-pink-50`}>
       {children}
     </div>
   )

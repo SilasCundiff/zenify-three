@@ -37,7 +37,7 @@ export default function SimplePlayer() {
 
   return (
     <div>
-      <div className='flex h-screen w-full flex-col items-center justify-center bg-transparent  text-white'>
+      <div className='flex h-screen w-full flex-col items-center justify-center bg-transparent  text-pink-50'>
         <div>
           <button className='m-2 rounded-lg bg-green-300 px-4 py-2 text-black' onClick={() => player.togglePlay()}>
             {playerState?.paused ? 'Play' : 'Pause'}

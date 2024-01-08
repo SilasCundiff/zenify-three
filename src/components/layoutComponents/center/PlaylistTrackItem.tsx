@@ -26,7 +26,7 @@ const PlaylistTrackItem = ({ track, order }) => {
     // eslint-disable-next-line tailwindcss/migration-from-tailwind-2
     <div
       ref={itemRef}
-      className='rounded-custom grid cursor-pointer grid-cols-2 px-5 py-4 text-gray-500  opacity-0 hover:bg-gray-800/30 hover:text-white'
+      className='rounded-custom grid cursor-pointer grid-cols-2 px-5 py-4 text-gray-500  opacity-0 hover:bg-gray-800/30 hover:text-pink-50'
     >
       <div className='flex items-center space-x-4'>
         <p className='flex max-w-[32px] text-lg  font-bold'>{order + 1}</p>
