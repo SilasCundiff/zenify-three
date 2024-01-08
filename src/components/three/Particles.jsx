@@ -7,7 +7,6 @@ import { extend, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef, useState } from 'react'
 import { button, useControls } from 'leva'
 import { lerp } from '@/helpers/utils/util-functions'
-import { debounce } from 'lodash'
 
 import { useSpotifyWebSDK } from '@/helpers/hooks'
 import spotifyApi from '@/helpers/spotify'
@@ -96,7 +95,6 @@ export default function Particles() {
   useFrame((state, delta) => {
     if (spotifySync?.current.time && spotifySync && playerState?.paused === false) {
       const features = spotifySync.current?.state.trackFeatures
-      console.log(features)
       const { energy, mode, key, acousticness, tempo, valence } = features
 
       const segment = spotifySync.current?.getInterval('segment')
@@ -110,8 +108,6 @@ export default function Particles() {
       // animate time uniform
       pointsRef.current.material.uniforms.time.value =
         (spotifySync.current?.time / 1000) * spotifySync?.current.volume * features.energy * OffsetVolume
-
-      // console.log({ segment, energy, mode, key, acousticness, tempo, valence })
 
       let targetAmplitude = (60 - Math.abs(loudnessMax)) * 0.01 + offsetAmplitude
       let targetFrequency = Math.floor(100 - Math.abs(attack)) / 100

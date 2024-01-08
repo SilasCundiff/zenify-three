@@ -6,7 +6,6 @@ import { authOptions } from '@/helpers/authOptions'
 
 import './global.css'
 import Provider from '@/components/context/client-provider'
-import Page from './page'
 import PageWrapper from '@/components/layoutComponents/PageWrapper'
 
 const natoSansDisplay = Noto_Sans_Display({

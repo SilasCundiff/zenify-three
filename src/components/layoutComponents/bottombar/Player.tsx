@@ -127,7 +127,7 @@ const Player = () => {
   // if the player takes more than 5 seconds to load, display a message informing the user that they need to have an active spotify session
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (playerState?.loading) {
+      if (playerState?.loading && !playerState?.track_window.current_track) {
         setSpotifySessionDoesntExist(true)
       }
     }, 10000)
@@ -136,7 +136,7 @@ const Player = () => {
 
   // if the player connects and is loaded, remove the message
   useEffect(() => {
-    if (playerState?.loading === false) {
+    if (playerState?.loading === false && playerState?.track_window.current_track) {
       setSpotifySessionDoesntExist(false)
     }
   }, [playerState])
@@ -151,7 +151,7 @@ const Player = () => {
     }
   }, [])
 
-  if (spotifySessionDoesntExist) {
+  if (spotifySessionDoesntExist || (playerState?.loading && !playerState?.track_window.current_track)) {
     return (
       <div
         ref={playerRef}

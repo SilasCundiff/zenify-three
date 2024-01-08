@@ -1,8 +1,8 @@
-const title = 'React Three Next Starter'
-const url = 'https://react-three-next.vercel.app/'
-const description = 'The easiest and fastest way to create a 3D website using React Three Fiber and NextJS'
-const author = 'Author'
-const twitter = '@pmndrs'
+const title = 'Zenify - Audio Visualizer for Spotify'
+const url = 'https://zenify.silascundiff.com'
+const description = 'Zenify is an audio visualizer for your Spotify music'
+const author = 'Silas Cundiff'
+const twitter = '@Xilzen1'
 
 export default function Head() {
   return (
@@ -18,12 +18,9 @@ export default function Head() {
       {/* Search Engine Optimization Meta Tags */}
       <title>{title}</title>
       <meta name='description' content={description} />
-      <meta name='keywords' content='Software Engineer' />
+      <meta name='keywords' content='Spotify Visualizer' />
       <meta name='robots' content='index,follow' />
       <meta name='distribution' content='web' />
-      {/* 
-      Facebook Open Graph meta tags
-        documentation: https://developers.facebook.com/docs/sharing/opengraph */}
       <meta property='og:title' content={title} />
       <meta property='og:type' content='site' />
       <meta property='og:url' content={url} />

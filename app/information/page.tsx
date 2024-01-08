@@ -1,11 +1,8 @@
 'use client'
-/* eslint-disable tailwindcss/no-custom-classname */
-
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 function Welcome() {
-  // check to see if user is authenticated
   const { status } = useSession()
 
   return (

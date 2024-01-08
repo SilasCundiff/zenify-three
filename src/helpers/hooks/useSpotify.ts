@@ -1,17 +1,19 @@
 import { useSession, signIn } from 'next-auth/react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import spotifyApi from '@/helpers/spotify'
 import { create } from 'zustand'
 
 type TokenState = {
   accessToken: string
   refreshToken: string
+  tokenExpiresAt?: number
 }
 
 type TokenActions = {
   setBothTokens: (accessToken: string, refreshToken: string) => void
   setAccessToken: (accessToken: string) => void
   setRefreshToken: (refreshToken: string) => void
+  setTokenExpiresAt: (tokenExpiresAt: number) => void
   getAccessToken: () => string
   getRefreshToken: () => string
 }
@@ -24,6 +26,7 @@ export const useTokenStore = create<TokenStore>((set, get) => ({
   setBothTokens: (accessToken, refreshToken) => set(() => ({ accessToken, refreshToken })),
   setAccessToken: (accessToken) => set(() => ({ accessToken })),
   setRefreshToken: (refreshToken) => set(() => ({ refreshToken })),
+  setTokenExpiresAt: (tokenExpiresAt) => set(() => ({ tokenExpiresAt })),
   getAccessToken: () => get().accessToken,
   getRefreshToken: () => get().refreshToken,
 }))
@@ -55,12 +58,12 @@ const useSpotifyPlayerStore = create<SpotifyPlayerStore>((set, get) => ({
  * @returns {SpotifyWebApi} An instance of the SpotifyWebApi object with the access token set.
  *
  * @example
- * const spotifyApi = useSpotify();
+ * const spotifyApi = useSpotifyApi();
  * const accessToken = spotifyApi.getAccessToken();
  */
 export const useSpotifyApi = () => {
-  const { data: session, status } = useSession()
-  const { setBothTokens } = useTokenStore()
+  const { data: session } = useSession()
+  const { setBothTokens, setTokenExpiresAt } = useTokenStore()
 
   useEffect(() => {
     if (session) {
@@ -171,37 +174,3 @@ export const useSpotifyWebSDK = () => {
 
   return { player, playerState }
 }
-
-// export const useSpotifySongAnalysis = () => {
-//   const spotifyApi = useSpotifyApi()
-//   const { playerState } = useSpotifyWebSDK()
-//   const [analysis, setAnalysis] = useState(null)
-//   const [features, setFeatures] = useState(null)
-//   const currentSongRef = useRef(null)
-
-//   const getAnalysis = useCallback(
-//     async (songId) => {
-//       const analysis = await spotifyApi.getAudioAnalysisForTrack(songId)
-//       const features = await spotifyApi.getAudioFeaturesForTrack(songId)
-
-//       setAnalysis(analysis)
-//       setFeatures(features)
-//     },
-//     [spotifyApi],
-//   )
-
-//   useEffect(() => {
-//     if (!playerState) return
-
-//     const songId = playerState?.track_window?.current_track?.id
-
-//     if (!songId) return
-
-//     if (songId !== currentSongRef.current) {
-//       currentSongRef.current = songId
-//       getAnalysis(songId)
-//     }
-//   }, [playerState, getAnalysis])
-
-//   return { analysis, features }
-// }

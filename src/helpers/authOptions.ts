@@ -15,7 +15,7 @@ import spotifyApi, { LOGIN_URL } from './spotify'
  *
  * @throws Will throw an error if the Spotify API client is not set up correctly.
  */
-const refreshAccessToken = async (token: JWT) => {
+export const refreshAccessToken = async (token: JWT) => {
   try {
     spotifyApi.setAccessToken(token.accessToken)
     spotifyApi.setRefreshToken(token.refreshToken)

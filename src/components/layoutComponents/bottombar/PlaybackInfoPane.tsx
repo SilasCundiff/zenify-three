@@ -4,7 +4,7 @@ import { useSpotifyWebSDK } from '@/helpers/hooks'
 import { useUI } from '@/helpers/hooks/useUI'
 import gsap from 'gsap'
 import Image from 'next/image'
-import { use, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function PlaybackInfoPane() {
   const { playerState } = useSpotifyWebSDK()
@@ -20,11 +20,8 @@ export default function PlaybackInfoPane() {
 
   useEffect(() => {
     const node = playbackPaneRef.current
-
-    // add a gsap animation to slide the playback pane in from the left and fade it in
     gsap.to(node, { x: 0, duration: 0.5, ease: 'power2.out' })
 
-    // handle the cleanup of the gsap animation
     return () => {
       gsap.to(node, { x: 0, duration: 0.5, ease: 'power2.in' })
     }

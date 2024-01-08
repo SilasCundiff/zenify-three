@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSpotifyApi } from '@/helpers/hooks/useSpotify'
 import { useSession } from 'next-auth/react'
 import { useSelectedPlaylistStore } from '@/helpers/hooks/usePlaylist'

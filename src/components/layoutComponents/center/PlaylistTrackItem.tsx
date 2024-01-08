@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 
 const PlaylistTrackItem = ({ track, order }) => {
-  const { id, name, album, artists, duration_ms, explicit, popularity, uri } = track
+  const { name, album, artists, duration_ms } = track
   const [imgSrc, setImgSrc] = useState(album.images[2].url)
   const itemRef = useRef(null)
 
@@ -23,7 +23,6 @@ const PlaylistTrackItem = ({ track, order }) => {
   }, [album])
 
   return (
-    // eslint-disable-next-line tailwindcss/migration-from-tailwind-2
     <div
       ref={itemRef}
       className='rounded-custom grid cursor-pointer grid-cols-2 px-5 py-4 text-gray-500  opacity-0 hover:bg-gray-800/30 hover:text-pink-50'
