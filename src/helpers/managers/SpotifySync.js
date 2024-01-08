@@ -5,16 +5,7 @@ import { Observe, ease, interpolate } from '../utils/util-functions'
 
 export default class SpotifySync {
   constructor({ canvasRef, spotifyApi, volumeSmoothing = 100, pingDelay = 2500 } = {}) {
-    const accessToken = useTokenStore.getState().accessToken
-    // const refreshToken = spotifyApi.getRefreshToken()
-
-    // make sure the access token is updated when it changes
-    useTokenStore.subscribe(
-      (accessToken) => {
-        this.state.apiConstants.tokens.accessToken = accessToken
-      },
-      (state) => state.accessToken,
-    )
+    const accessToken = spotifyApi.getAccessToken()
 
     this.canvas = canvasRef
 

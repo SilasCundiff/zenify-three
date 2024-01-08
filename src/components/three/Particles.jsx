@@ -97,6 +97,7 @@ export default function Particles() {
   useFrame((state, delta) => {
     if (spotifySync?.current.time && spotifySync && playerState?.paused === false) {
       const features = spotifySync.current?.state.trackFeatures
+      console.log(features)
       const { energy, mode, key, acousticness, tempo, valence } = features
 
       const segment = spotifySync.current?.getInterval('segment')
