@@ -157,17 +157,17 @@ export default function Particles() {
       pointsRef.current.material.uniforms.startColor.value.r = lerp(
         pointsRef.current.material.uniforms.startColor.value.r,
         startColorTarget.r,
-        0.05,
+        0.025,
       )
       pointsRef.current.material.uniforms.startColor.value.g = lerp(
         pointsRef.current.material.uniforms.startColor.value.g,
         startColorTarget.g,
-        0.05,
+        0.025,
       )
       pointsRef.current.material.uniforms.startColor.value.b = lerp(
         pointsRef.current.material.uniforms.startColor.value.b,
         startColorTarget.b,
-        0.05,
+        0.025,
       )
       pointsRef.current.material.uniforms.startColor.needsUpdate = true
 
@@ -175,17 +175,17 @@ export default function Particles() {
       pointsRef.current.material.uniforms.endColor.value.r = lerp(
         pointsRef.current.material.uniforms.endColor.value.r,
         endColorTarget.r,
-        0.05,
+        0.025,
       )
       pointsRef.current.material.uniforms.endColor.value.g = lerp(
         pointsRef.current.material.uniforms.endColor.value.g,
         endColorTarget.g,
-        0.05,
+        0.025,
       )
       pointsRef.current.material.uniforms.endColor.value.b = lerp(
         pointsRef.current.material.uniforms.endColor.value.b,
         endColorTarget.b,
-        0.05,
+        0.025,
       )
       pointsRef.current.material.uniforms.endColor.needsUpdate = true
     } else {
