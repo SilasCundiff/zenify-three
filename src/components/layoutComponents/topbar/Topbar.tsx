@@ -10,29 +10,9 @@ import { useMouseMovement } from '@/helpers/hooks/useMouseMovement'
 function Topbar() {
   const { uiHidden, setUiHidden } = useUI()
   const mouseMoved = useMouseMovement()
+
   return (
     <div className='relative flex w-full p-2 md:grid md:grid-cols-[240px_1fr_240px] md:p-4'>
-      <div
-        className={`${
-          uiHidden ? (mouseMoved ? 'opacity-25' : 'opacity-25 md:opacity-0') : 'opacity-100'
-        } pointer-events-auto absolute top-16 z-0 col-start-1 transition-opacity duration-500 hover:opacity-100 md:top-4`}
-      >
-        <Leva
-          collapsed
-          titleBar={{ title: 'Particle Settings' }}
-          fill
-          theme={{
-            colors: {
-              accent1: '#FFF',
-              accent2: '#F9A8D4',
-              accent3: '#FFF',
-              elevation1: '#000',
-              elevation2: '#111',
-              elevation3: '#fff',
-            },
-          }}
-        />
-      </div>
       <div
         className={`${
           uiHidden ? 'pointer-events-none opacity-0 md:opacity-0' : 'opacity-100'

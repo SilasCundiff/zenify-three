@@ -250,7 +250,11 @@ export default function Particles() {
       'Set To Default Values': defaultOptions['Set To Default Values'],
       'Reset Camera': defaultOptions['Reset Camera'],
     }),
-    { collapsed: true },
+    {
+      collapsed: false,
+      hidden: true,
+    },
+    [playerState?.paused],
   )
 
   useEffect(() => {

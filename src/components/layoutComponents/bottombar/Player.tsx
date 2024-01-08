@@ -123,15 +123,6 @@ const Player = () => {
     }
   }, [volume, debouncedVolumeChange])
 
-  // cleanup player
-  useEffect(() => {
-    return () => {
-      if (player) {
-        player.disconnect()
-      }
-    }
-  }, [player])
-
   // if the player takes more than 5 seconds to load, display a message informing the user that they need to have an active spotify session
   useEffect(() => {
     const timeout = setTimeout(() => {
