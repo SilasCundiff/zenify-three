@@ -17,7 +17,7 @@ import {
   faWindowClose,
 } from '@fortawesome/free-solid-svg-icons'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 
 import ProgressBar from './ProgressBar'
@@ -34,6 +34,14 @@ const Player = () => {
   const prevVolumeRef = useRef(1)
   const playerRef = useRef(null)
   const mouseMoved = useMouseMovement()
+
+  useEffect(() => {
+    console.log(playerState)
+    // if the player is paused, the track_window.current_track is null, and the loading is false, assume the user has changed their active device and inform them that they should refresh the page
+    if (playerState?.paused && !playerState?.track_window.current_track && !playerState?.loading) {
+      setSpotifySessionDoesntExist(true)
+    }
+  }, [playerState])
 
   const handleVolumeChange = (value) => {
     setVolume(value)
@@ -158,12 +166,13 @@ const Player = () => {
         className='glass-pane md:rounded-custom mx-auto flex h-24 min-h-24 w-full max-w-lg shrink-0 translate-y-[200%] rounded-none p-2 text-xs md:text-base'
       >
         <p className='m-auto flex flex-col text-center text-sm'>
-          <span className='ml-4'>You need to have an active Spotify session to use this feature!</span>
+          <span className='ml-4'>You need to have an active Spotify session to use Zenify!</span>
           <span className='ml-4'>
             Please <span className='text-pink-300'>open spotify</span> on any device and start a song,
           </span>
           <span className='ml-4'>
-            then come back here and <span className='text-pink-300'>refresh the page</span>!
+            then <span className='text-pink-300'>set your device to &quot;Zenify&quot;</span> or come back here and{' '}
+            <span className='text-pink-300'>refresh the page</span>!
           </span>
         </p>
       </div>
