@@ -36,7 +36,6 @@ const Player = () => {
   const mouseMoved = useMouseMovement()
 
   useEffect(() => {
-    console.log(playerState)
     // if the player is paused, the track_window.current_track is null, and the loading is false, assume the user has changed their active device and inform them that they should refresh the page
     if (playerState?.paused && !playerState?.track_window.current_track && !playerState?.loading) {
       setSpotifySessionDoesntExist(true)
